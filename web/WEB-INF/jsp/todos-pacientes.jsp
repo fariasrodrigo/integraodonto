@@ -47,6 +47,24 @@
             })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
             ga('create', 'UA-19175540-9', 'auto');
             ga('send', 'pageview');
+
+            (function ($) {
+                remove = function (item) {
+                    var tr = $(item).closest('tr');
+                    tr.fadeOut(400, function () {
+                        tr.remove();
+                    });
+                    return false;
+                }
+            })(jQuery);
+
+            function depoisDeExcluir(dadosDoController) {
+                window.history.pushState({}, document.title, "todos-pacientes");
+                alert("Exluído com sucesso!");
+            }
+            function excluir(id) {
+                $.get("deletando-paciente?id=" + id, depoisDeExcluir);
+            }
         </script>
     </head>
 
@@ -179,7 +197,7 @@
                 <div class="container-fluid">
                     <div class="row bg-title">
                         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                            <h4 class="page-title"></h4>
+                            <h4 class="page-title">PACIENTES</h4>
                         </div>
                         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                             <ol class="breadcrumb">
@@ -193,7 +211,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-sm-12 col-xs-12">
                             <div class="white-box">
-                                <h3 class="box-title">PACIENTES</h3>
+                                <h3 class="box-title"></h3>
                                 <p class="text-muted m-b-30">Visualize e adicione pacientes aqui</p>
                                 <!-- Nav tabs -->
                                 <ul class="nav customtab nav-tabs" role="tablist">
@@ -209,148 +227,36 @@
                                                     <table class="table table-hover table-bordered">
                                                         <thead>
                                                             <tr>
-                                                                <th>Código Prontuário</th>
+                                                                <th>Prontuário</th>
                                                                 <th>Nome</th>
+                                                                <th>CPF</th>
+                                                                <th>RG</th>
                                                                 <th>Contato Celular</th>
                                                                 <th>Contato Fixo</th>
+                                                                <th>Plano de Saúde</th>
                                                                 <th>Última Consulta</th>
                                                                 <th>Próxima Consulta</th>
                                                                 <th colspan="4">Interações</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Rodrigo Farias</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Elizama Farias</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Elinaldo Rodrigues</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Bruno Libório</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Ricardo Chastinet</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Marcos Sales</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Rafael Farias</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Rafael Farias</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Rafael Farias</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Rafael Farias</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2658943252</td>
-                                                                <td><a href="#">Rafael Farias</a></td>
-                                                                <td>(71) 999998810</td>
-                                                                <td>(71) 999998810</td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
+                                                            <c:forEach items="${pacienteList}" var="list">
+                                                                <tr>
+                                                                    <td>${list.prontuario}</td>
+                                                                    <td><a href="#">${list.nome}</a></td>
+                                                                    <td>${list.cpf}</td>
+                                                                    <td>${list.rg}</td>
+                                                                    <td>${list.celular}</td>
+                                                                    <td>${list.fixo}</td>
+                                                                    <td>${list.planoDeSaude}</td>
+                                                                    <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
+                                                                    <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
+                                                                    <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
+                                                                    <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
+                                                                    <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
+                                                                    <td><a href='#' onclick="remove(this);excluir(${list.id})" class="text-muted"><i class="fa fa-trash-o"></i> Excluir</a></td>
+                                                                </tr>
+                                                            </c:forEach>
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -432,8 +338,8 @@
         <!-- Date Picker Plugin JavaScript -->
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.js" />"></script>
         <script type="text/javascript">
-            // Date Picker
-            jQuery('.mydatepicker').datepicker();
+                                                                        // Date Picker
+                                                                        jQuery('.mydatepicker').datepicker();
         </script>
         <!-- Custom Theme JavaScript -->
         <script type="text/javascript" src="<c:url value="/resources/js/custom.min.js" />"></script>

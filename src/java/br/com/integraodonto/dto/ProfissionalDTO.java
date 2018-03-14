@@ -7,10 +7,10 @@ public class ProfissionalDTO {
     private String nome;
     private String sexo;
     private String especializacao;
-    private String cro;
     private String cpf;
     private String rg;
     private String stats; //ativo ou inativo
+    private String agenda;
     private String deletado; //sim ou não
     private int contatoID; //foreign key
     private int consultorioID; //foreign key    
@@ -79,20 +79,6 @@ public class ProfissionalDTO {
      */
     public void setEspecializacao(String especializacao) {
         this.especializacao = especializacao;
-    }
-
-    /**
-     * @return the cro
-     */
-    public String getCro() {
-        return cro;
-    }
-
-    /**
-     * @param cro the cro to set
-     */
-    public void setCro(String cro) {
-        this.cro = cro;
     }
 
     /**
@@ -261,6 +247,20 @@ public class ProfissionalDTO {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     * @return the agenda
+     */
+    public String getAgenda() {
+        return agenda;
+    }
+
+    /**
+     * @param agenda the agenda to set
+     */
+    public void setAgenda(String agenda) {
+        this.agenda = agenda;
     }
 
     

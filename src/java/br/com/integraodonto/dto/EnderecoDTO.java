@@ -6,7 +6,7 @@ public class EnderecoDTO {
     private long id;
     private String cep;
     private String endereco;
-    private int numero;
+    private String numero;
     private String compl;
     private String bairro;
     private String cidade;
@@ -57,14 +57,14 @@ public class EnderecoDTO {
     /**
      * @return the numero
      */
-    public int getNumero() {
+    public String getNumero() {
         return numero;
     }
 
     /**
      * @param numero the numero to set
      */
-    public void setNumero(int numero) {
+    public void setNumero(String numero) {
         this.numero = numero;
     }
 

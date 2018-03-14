@@ -23,7 +23,7 @@ public class ProfissionalDAO {
             throw new IllegalArgumentException("profissional não deve ser nulo");
         }
 
-        String sql = "select id, nome, sexo, especializacao, cro, cpf, rg, stats, deletado, nivel, login, senha, contato, consultorio from profissional where login = ? and senha = ? ;";
+        String sql = "select id, nome, sexo, especializacao, cpf, rg, stats, agenda, deletado, nivel, login, senha, contato, consultorio from profissional where login = ? and senha = ? ;";
         try (PreparedStatement stmt = connection.prepareStatement(sql);) {
             stmt.setString(1, profissional.getLogin());
             stmt.setString(2, profissional.getSenha());
@@ -34,10 +34,10 @@ public class ProfissionalDAO {
                     profissional.setNome(rs.getString("nome"));
                     profissional.setSexo(rs.getString("sexo"));
                     profissional.setEspecializacao(rs.getString("especializacao"));
-                    profissional.setCro(rs.getString("cro"));
                     profissional.setCpf(rs.getString("cpf"));
                     profissional.setRg(rs.getString("rg"));
                     profissional.setStats(rs.getString("stats"));
+                    profissional.setAgenda(rs.getString("agenda"));
                     profissional.setDeletado(rs.getString("deletado"));
                     profissional.setNivel(rs.getString("nivel"));
                     profissional.setLogin(rs.getString("login"));
@@ -61,27 +61,32 @@ public class ProfissionalDAO {
             throw new IllegalArgumentException("adiciona profissional esta vazio");
         }
 
+        connection.setAutoCommit(false);
+
         ContatoDAO contatoDAO = new ContatoDAO(connection);
 
-        String sql = "INSERT INTO profissional (nome, sexo, especializacao, cro, cpf, rg, stats, deletado, nivel, login, senha, contato, consultorio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
+        String sql = "INSERT INTO profissional (nome, sexo, especializacao, cpf, rg, stats, agenda, deletado, nivel, login, senha, contato, consultorio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
         try (PreparedStatement stmt = connection.prepareStatement(sql);) {
             stmt.setString(1, profissional.getNome());
             stmt.setString(2, profissional.getSexo());
             stmt.setString(3, profissional.getEspecializacao());
-            stmt.setString(4, profissional.getCro());
-            stmt.setString(5, profissional.getCpf());
-            stmt.setString(6, profissional.getRg());
-            stmt.setString(7, "ativo");
+            stmt.setString(4, profissional.getCpf());
+            stmt.setString(5, profissional.getRg());
+            stmt.setString(6, "ativo");
+            stmt.setString(7, profissional.getAgenda());
             stmt.setString(8, "nao");
             stmt.setString(9, "usuario");
             stmt.setString(10, profissional.getLogin());
             stmt.setString(11, profissional.getSenha());
             stmt.setInt(12, contatoDAO.adicionaRetornandoID(contato));
             stmt.setInt(13, profissional.getConsultorioID());
+
             stmt.execute();
 
+            connection.commit();
         } catch (Exception e) {
-
+            connection.rollback();
+            e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
 
@@ -100,10 +105,10 @@ public class ProfissionalDAO {
                 + "profissional.nome, \n"
                 + "profissional.sexo, \n"
                 + "profissional.especializacao, \n"
-                + "profissional.cro, \n"
                 + "profissional.cpf, \n"
                 + "profissional.rg, \n"
                 + "profissional.stats, \n"
+                + "profissional.agenda, \n"
                 + "profissional.deletado, \n"
                 + "profissional.nivel, \n"
                 + "profissional.login, \n"
@@ -123,10 +128,10 @@ public class ProfissionalDAO {
                     profissional.setNome(rs.getString("nome"));
                     profissional.setSexo(rs.getString("sexo"));
                     profissional.setEspecializacao(rs.getString("especializacao"));
-                    profissional.setCro(rs.getString("cro"));
                     profissional.setCpf(rs.getString("cpf"));
                     profissional.setRg(rs.getString("rg"));
                     profissional.setStats(rs.getString("stats"));
+                    profissional.setAgenda(rs.getString("agenda"));
                     profissional.setDeletado(rs.getString("deletado"));
                     profissional.setNivel(rs.getString("nivel"));
                     profissional.setLogin(rs.getString("login"));
@@ -155,10 +160,10 @@ public class ProfissionalDAO {
                 + "profissional.nome, \n"
                 + "profissional.sexo, \n"
                 + "profissional.especializacao, \n"
-                + "profissional.cro, \n"
                 + "profissional.cpf, \n"
                 + "profissional.rg, \n"
                 + "profissional.stats, \n"
+                + "profissional.agenda, \n"
                 + "profissional.deletado, \n"
                 + "profissional.nivel, \n"
                 + "profissional.login, \n"
@@ -169,7 +174,7 @@ public class ProfissionalDAO {
                 + "contato.celular, contato.fixo, contato.email\n"
                 + "\n"
                 + "FROM profissional INNER JOIN contato ON (profissional.contato = contato.id)\n"
-                + "WHERE consultorio = " + id + ";";
+                + "WHERE consultorio = " + id + " and deletado = 'nao' ;";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql);
                 ResultSet resultSet = stmt.executeQuery()) {
@@ -189,14 +194,14 @@ public class ProfissionalDAO {
     private ProfissionalDTO popularTodosProfissionais(ResultSet rs) throws SQLException {
         ProfissionalDTO profissional = new ProfissionalDTO();
 
-        profissional.setId(rs.getInt("id"));
+        profissional.setId(rs.getLong("id"));
         profissional.setNome(rs.getString("nome"));
         profissional.setSexo(rs.getString("sexo"));
         profissional.setEspecializacao(rs.getString("especializacao"));
-        profissional.setCro(rs.getString("cro"));
         profissional.setCpf(rs.getString("cpf"));
         profissional.setRg(rs.getString("rg"));
         profissional.setStats(rs.getString("stats"));
+        profissional.setAgenda(rs.getString("agenda"));
         profissional.setDeletado(rs.getString("deletado"));
         profissional.setNivel(rs.getString("nivel"));
         profissional.setLogin(rs.getString("login"));
@@ -210,9 +215,9 @@ public class ProfissionalDAO {
         return profissional;
     }
 
-    public void alterarPerfilAdmin(ProfissionalDTO profissional, long id) throws SQLException {
+    public void alterarMeuPerfilAdmin(ProfissionalDTO profissional, long id, long consultorio) throws SQLException {
 
-        String sql = "UPDATE profissional SET nome = ?, sexo = ?, cpf = ?, rg = ?, login = ?, senha = ? WHERE id = " + id + " ;";
+        String sql = "UPDATE profissional SET nome = ?, sexo = ?, cpf = ?, rg = ?, login = ?, senha = ? WHERE id = " + id + " and consultorio = " + consultorio + " ;";
         try (PreparedStatement stmt = connection.prepareStatement(sql);) {
             stmt.setString(1, profissional.getNome());
             stmt.setString(2, profissional.getSexo());
@@ -228,15 +233,71 @@ public class ProfissionalDAO {
         }
     }
 
-    public void alterarPerfilUsuario(ProfissionalDTO profissional, long id) throws SQLException {
+    public void alterarMeuPerfilUsuario(ProfissionalDTO profissional, long id, long consultorio) throws SQLException {
 
-        String sql = "UPDATE profissional SET nome = ?, sexo = ?, login = ?, senha = ? WHERE id = " + id + " ;";
+        String sql = "UPDATE profissional SET nome = ?, sexo = ?, login = ?, senha = ? WHERE id = " + id + " and consultorio = " + consultorio + " ;";
         try (PreparedStatement stmt = connection.prepareStatement(sql);) {
             stmt.setString(1, profissional.getNome());
             stmt.setString(2, profissional.getSexo());
             stmt.setString(3, profissional.getLogin());
             stmt.setString(4, profissional.getSenha());
             stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+
+        }
+    }
+
+    public void alterarProfissional(ProfissionalDTO profissional, long consultorio) throws SQLException {
+
+        String sql = "UPDATE profissional SET nome = ?, sexo = ?, especializacao = ?, cpf = ?, rg = ?, stats = ?, agenda = ?, nivel = ?, login = ?, senha = ? WHERE id = " + profissional.getId() + " and consultorio = " + consultorio + ";";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);) {
+            stmt.setString(1, profissional.getNome());
+            stmt.setString(2, profissional.getSexo());
+            stmt.setString(3, profissional.getEspecializacao());
+            stmt.setString(4, profissional.getCpf());
+            stmt.setString(5, profissional.getRg());
+            stmt.setString(6, profissional.getStats());
+            stmt.setString(7, profissional.getAgenda());
+            stmt.setString(8, profissional.getNivel());
+            stmt.setString(9, profissional.getLogin());
+            stmt.setString(10, profissional.getSenha());
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+
+        }
+    }
+
+    public void alterarDeletadoProfissional(ProfissionalDTO profissional, long consultorio) throws SQLException {
+
+        String sql = "UPDATE profissional SET deletado = ?, stats = ? WHERE id = " + profissional.getId() + " AND consultorio = " + consultorio + " ;";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);) {
+            stmt.setString(1, "sim");
+            stmt.setString(2, "inativo");
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+
+        }
+    }
+
+    public boolean verificaSeEmailExisteProfissional(String email, long id) throws SQLException {
+
+        if (email == null) {
+            throw new IllegalArgumentException("email não deve ser nulo");
+        }
+        boolean encontrado;
+        String sql = "select login from profissional where login = '" + email + "' and consultorio = " + id + ";";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                encontrado = rs.next();
+            }
+            return encontrado;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {

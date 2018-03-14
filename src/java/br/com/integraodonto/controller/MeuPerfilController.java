@@ -38,10 +38,10 @@ public class MeuPerfilController {
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
 
-            if ("admin".equals(profissionalDTO.getNivel())) {
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) {
                 readOnly = "";
 
-            } else if ("usuario".equals(profissionalDTO.getNivel())) {
+            } else if ("usuario".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) {
                 readOnly = "readonly";
             }
 
@@ -79,7 +79,7 @@ public class MeuPerfilController {
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
 
-            if ("admin".equals(profissionalDTO.getNivel())) { // Verifica se usuário tem permissões
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
                 profissional.setNome(request.getParameter("nome"));
                 profissional.setSexo(request.getParameter("sexo"));
                 profissional.setCpf(request.getParameter("cpf"));
@@ -92,12 +92,12 @@ public class MeuPerfilController {
                 contatoDTO.setFixo(request.getParameter("fixo"));
                 contatoDTO.setEmail(request.getParameter("email"));
 
-                profissionalDAO.alterarPerfilAdmin(profissional, profissionalDTO.getId());
+                profissionalDAO.alterarMeuPerfilAdmin(profissional, profissionalDTO.getId(), profissionalDTO.getConsultorioID());
                 contatoDAO.alterar(contatoDTO, profissionalDTO.getContatoID());
 
                 return "redirect:meu-perfil";
 
-            } else if ("usuario".equals(profissionalDTO.getNivel())) {
+            } else if ("usuario".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) {
                 profissional.setNome(request.getParameter("nome"));
                 profissional.setSexo(request.getParameter("sexo"));
 
@@ -108,7 +108,7 @@ public class MeuPerfilController {
                 contatoDTO.setFixo(request.getParameter("fixo"));
                 contatoDTO.setEmail(request.getParameter("email"));
 
-                profissionalDAO.alterarPerfilUsuario(profissional, profissionalDTO.getId());
+                profissionalDAO.alterarMeuPerfilUsuario(profissional, profissionalDTO.getId(), profissionalDTO.getConsultorioID());
                 contatoDAO.alterar(contatoDTO, profissionalDTO.getContatoID());
 
                 return "redirect:meu-perfil";

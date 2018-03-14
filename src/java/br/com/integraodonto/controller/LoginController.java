@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @Scope(value = WebApplicationContext.SCOPE_REQUEST) //Controller é criado e depois, ela deixa de existir.
@@ -22,7 +23,7 @@ public class LoginController {
     }
 
     @RequestMapping("/acessando-consultorio")
-    public String efetuaLogin(ProfissionalDTO profissional, HttpSession session) throws SQLException {
+    public String efetuaLogin(ProfissionalDTO profissional, HttpSession session, RedirectAttributes model) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
         ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
@@ -34,17 +35,20 @@ public class LoginController {
                     if ("nao".equals(profissionalDTO.getDeletado())) {
 
                         session.setAttribute("logando", profissional);
+                        return "redirect:painel";
 
                     } else {
-                        System.out.println("Usuário Deletado");
+                        model.addFlashAttribute("message", "Usuário Deletado.");
+                        return "redirect:login";
                     }
 
                 } else {
-                    System.out.println("Usuário Inativo");
+                    model.addFlashAttribute("message", "Usuário Inativo.");
+                    return "redirect:login";
                 }
 
             } else {
-                System.out.println("Usuário ou Senha incorretos");
+                model.addFlashAttribute("message", "Usuário ou Senha incorretos.");
                 return "redirect:login";
             }
         } catch (Exception e) {
@@ -56,7 +60,7 @@ public class LoginController {
             }
         }
 
-        return "redirect:painel";
+        return null;
     }
 
     @RequestMapping("/logout")

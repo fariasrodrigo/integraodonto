@@ -179,7 +179,7 @@
                 <div class="container-fluid">
                     <div class="row bg-title">
                         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                            <h4 class="page-title"></h4>
+                            <h4 class="page-title">PROFISSIONAIS</h4>
                         </div>
                         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                             <ol class="breadcrumb">
@@ -193,7 +193,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-sm-12 col-xs-12">
                             <div class="white-box">
-                                <h3 class="box-title">PROFISSIONAIS</h3>
+                                <h3 class="box-title"></h3>
                                 <p class="text-muted m-b-30">Visualize e adicione profissionais aqui</p>
                                 <!-- Nav tabs -->
                                 <ul class="nav customtab nav-tabs" role="tablist">
@@ -205,7 +205,7 @@
                                     <div role="tabpanel" class="tab-pane fade active in">
                                         <div class="col-md-12">
                                             <div class="white-box">
-                                                <form action="adicionando-profissional" class="form-horizontal">
+                                                <form action="adicionando-profissional" class="form-horizontal" method="post">
                                                     <div class="form-body">
                                                         <h3 class="box-title">Informações Profissionais</h3>
                                                         <hr class="m-t-0 m-b-40">
@@ -245,12 +245,14 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <!--/span-->
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
-                                                                    <label class="control-label col-md-3">CRO</label>
+                                                                    <label class="control-label col-md-3">Possui Agenda?</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" class="form-control" name="cro">
+                                                                        <select class="form-control" name="agenda">
+                                                                            <option value="sim">Sim</option>
+                                                                            <option value="nao">Não</option>
+                                                                        </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -318,7 +320,7 @@
                                                                     <label class="control-label col-md-3">Login</label>
                                                                     <div class="col-md-9">
                                                                         <div class="input-group">
-                                                                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Insira o login" name="login">
+                                                                            <input type="email" class="form-control" id="exampleInputuname" placeholder="Insira o login" name="login">
                                                                             <div class="input-group-addon"><i class="ti-user"></i></div>
                                                                         </div>
                                                                     </div>

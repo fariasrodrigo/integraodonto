@@ -16,6 +16,7 @@
         <title>IntegraOdonto - Hospital admin dashboard web app kit</title>
         <!-- Jquery -->
         <script type="text/javascript" src="<c:url value="https://code.jquery.com/jquery-1.9.1.js" />"></script>
+
         <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/bootstrap/dist/css/bootstrap.min.css" />" />
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-extension/css/bootstrap-extension.css" />" />
@@ -179,7 +180,7 @@
                 <div class="container-fluid">
                     <div class="row bg-title">
                         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                            <h4 class="page-title"></h4>
+                            <h4 class="page-title">PACIENTES</h4>
                         </div>
                         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                             <ol class="breadcrumb">
@@ -193,7 +194,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-sm-12 col-xs-12">
                             <div class="white-box">
-                                <h3 class="box-title">PACIENTES</h3>
+                                <h3 class="box-title"></h3>
                                 <p class="text-muted m-b-30">Visualize e adicione pacientes aqui</p>
                                 <!-- Nav tabs -->
                                 <ul class="nav customtab nav-tabs" role="tablist">
@@ -205,16 +206,24 @@
                                     <div role="tabpanel" class="tab-pane fade active in" id="adicionapacientes">
                                         <div class="col-md-12">
                                             <div class="white-box">
-                                                <form action="#" class="form-horizontal">
+                                                <form action="adicionando-paciente" class="form-horizontal" method="post">
                                                     <div class="form-body">
-                                                        <h3 class="box-title">Informações Pessoais</h3>
+                                                        <h3 class="box-title">Informações Profissionais</h3>
                                                         <hr class="m-t-0 m-b-40">
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Nome</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control" placeholder="">
+                                                                        <input type="text" class="form-control" placeholder="" name="nome">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3">Prontuário</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" class="form-control" placeholder="" name="prontuario">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -225,23 +234,21 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Sexo</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control">
-                                                                            <option value="">Masculino</option>
-                                                                            <option value="">Feminino</option>
+                                                                        <select class="form-control" name="sexo">
+                                                                            <option value="Masculino">Masculino</option>
+                                                                            <option value="Feminino">Feminino</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <!--/span-->
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Data de Nascimento</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="99/99/9999" class="form-control">
+                                                                        <input type="text" placeholder="dd/mm/aaaa" data-mask="99/99/9999" class="form-control" name='nascimento'>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <!--/span-->
                                                         </div>
                                                         <!--/row-->
                                                         <div class="row">
@@ -249,7 +256,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">CPF</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="999.999.999-99" class="form-control">
+                                                                        <input type="text" placeholder="" data-mask="999.999.999-99" class="form-control" name="cpf">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -258,7 +265,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">RG</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="999-99-9999" class="form-control">
+                                                                        <input type="text" placeholder="" data-mask="99.999.999-99" class="form-control" name="rg">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -272,7 +279,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Contato Celular</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="Insira o celular, também utilizado para envio de SMS" data-mask="(99) 99999-9999" class="form-control"></div>
+                                                                        <input type="text" placeholder="Insira o celular, também utilizado para envio de SMS" data-mask="(99) 99999-9999" class="form-control" name="celular"> </div>
                                                                 </div>
                                                             </div>
                                                             <!--/span-->
@@ -280,8 +287,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Contato Fixo</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="Insira o contato residencial ou comercial" data-mask="(99) 9999-9999" class="form-control">
-                                                                    </div>
+                                                                        <input type="text" placeholder="Insira o contato residencial ou comercial" data-mask="(99) 9999-9999" class="form-control" name="fixo"> </div>
                                                                 </div>
                                                             </div>
                                                             <!--/span-->
@@ -292,12 +298,11 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Email</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="email" placeholder=""  class="form-control">
+                                                                        <input type="email" placeholder=""  class="form-control" name="email">
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <!--/row-->
                                                         <h3 class="box-title">Informações de Endereço</h3>
                                                         <hr class="m-t-0 m-b-40">
                                                         <div class="row">
@@ -305,7 +310,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">CEP</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="99.999-999" class="form-control">
+                                                                        <input type="text" placeholder="" data-mask="99.999-999" class="form-control" name='cep'>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -315,7 +320,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Endereço</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='endereco'>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -324,7 +329,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Número</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='numero'>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -332,7 +337,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Compl.</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='compl'>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -344,7 +349,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Bairro</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='bairro'>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -353,7 +358,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Cidade</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='cidade'>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -361,34 +366,34 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Estado</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control">
-                                                                            <option value="">Acre</option>
-                                                                            <option value="">Alagoas</option>
-                                                                            <option value="">Amapá</option>
-                                                                            <option value="">Amazonas</option>
-                                                                            <option value="">Bahia</option>
-                                                                            <option value="">Ceará</option>
-                                                                            <option value="">Distrito Federal</option>
-                                                                            <option value="">Espírito Santo</option>
-                                                                            <option value="">Goiás</option>
-                                                                            <option value="">Maranhão</option>
-                                                                            <option value="">Mato Grosso</option>
-                                                                            <option value="">Mato Grosso do Sul</option>
-                                                                            <option value="">Minas Gerais</option>
-                                                                            <option value="">Pará</option>
-                                                                            <option value="">Paraiba</option>
-                                                                            <option value="">Paraná</option>
-                                                                            <option value="">Pernambuco</option>
-                                                                            <option value="">Piauí</option>
-                                                                            <option value="">Rio de Janeiro</option>
-                                                                            <option value="">Rio Grande do Norte</option>
-                                                                            <option value="">Rio Grande do Sul</option>
-                                                                            <option value="">Rondônia</option>
-                                                                            <option value="">Roraima</option>
-                                                                            <option value="">Santa Catarina</option>
-                                                                            <option value="">Sergipe</option>
-                                                                            <option value="">São Paulo</option>
-                                                                            <option value="">Tocantins</option>
+                                                                        <select class="form-control" name='estado'>
+                                                                            <option value="Acre">Acre</option>
+                                                                            <option value="Alagoas">Alagoas</option>
+                                                                            <option value="Amapá">Amapá</option>
+                                                                            <option value="Amazonas">Amazonas</option>
+                                                                            <option value="Bahia">Bahia</option>
+                                                                            <option value="Ceará">Ceará</option>
+                                                                            <option value="Distrito Federal">Distrito Federal</option>
+                                                                            <option value="Espírito Santo">Espírito Santo</option>
+                                                                            <option value="Goiás">Goiás</option>
+                                                                            <option value="Maranhão">Maranhão</option>
+                                                                            <option value="Mato Grosso">Mato Grosso</option>
+                                                                            <option value="Mato Grosso do Sul">Mato Grosso do Sul</option>
+                                                                            <option value="Minas Gerais">Minas Gerais</option>
+                                                                            <option value="Pará">Pará</option>
+                                                                            <option value="Paraiba">Paraiba</option>
+                                                                            <option value="Paraná">Paraná</option>
+                                                                            <option value="Pernambuco">Pernambuco</option>
+                                                                            <option value="Piauí">Piauí</option>
+                                                                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                                                                            <option value="Rio Grande do Norte">Rio Grande do Norte</option>
+                                                                            <option value="Rio Grande do Sul">Rio Grande do Sul</option>
+                                                                            <option value="Rondônia">Rondônia</option>
+                                                                            <option value="Roraima">Roraima</option>
+                                                                            <option value="Santa Catarina">Santa Catarina</option>
+                                                                            <option value="Sergipe">Sergipe</option>
+                                                                            <option value="São Paulo">São Paulo</option>
+                                                                            <option value="Tocantins">Tocantins</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -403,9 +408,9 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Plano de Saúde</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control">
-                                                                            <option value="">Amil</option>
-                                                                            <option value="">Hapvida</option>
+                                                                        <select class="form-control" name='planoDeSaude'>
+                                                                            <option value="Amil">Amil</option>
+                                                                            <option value="Hapvida">Hapvida</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -415,7 +420,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Número do Cartão</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" class="form-control">
+                                                                        <input type="text" placeholder="" class="form-control" name='numeroDoCartao'>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -427,7 +432,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Nome do Plano</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" class="form-control">
+                                                                        <input type="text" placeholder="" class="form-control" name='nomeDoPlano'>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -436,9 +441,9 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Tipo de Usuário</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control">
-                                                                            <option value="">Titular</option>
-                                                                            <option value="">Dependente</option>
+                                                                        <select class="form-control" name='tipoDeUsuario'>
+                                                                            <option value="Titular">Titular</option>
+                                                                            <option value="Dependente">Dependente</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -451,12 +456,11 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3"> Titular Plano de Saúde</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" class="form-control">
+                                                                        <input type="text" placeholder="" class="form-control" name='titularDoPlano'>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <!--/row-->
                                                     </div>
                                                     <hr>
                                                     <div class="form-actions">
@@ -464,7 +468,7 @@
                                                             <div class="col-md-6">
                                                                 <div class="row">
                                                                     <div class="col-md-offset-3 col-md-9">
-                                                                        <button type="submit" class="btn btn-success">Salvar</button>
+                                                                        <button type="submit" class="btn btn-success">Adicionar</button>
                                                                         <button type="reset" class="btn btn-default">Limpar</button>
                                                                     </div>
                                                                 </div>

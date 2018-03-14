@@ -12,6 +12,8 @@
         <meta name="author" content="">
         <link rel="shortcut icon" type="text/css" href="<c:url value="/resources/plugins/images/favicon.png" />" />
         <title>Elite Hospital Admin Template - Hospital admin dashboard web app kit</title>
+        <!-- Jquery -->
+        <script type="text/javascript" src="<c:url value="https://code.jquery.com/jquery-1.9.1.js" />"></script>
         <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/bootstrap/dist/css/bootstrap.min.css" />" />
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-extension/css/bootstrap-extension.css" />" />
@@ -48,7 +50,7 @@
 
                         <div class="form-group m-t-40">
                             <div class="col-xs-12">
-                                <input class="form-control" type="text" required="" name='login' placeholder="Login">
+                                <input class="form-control" type="email" required="" name='login' placeholder="Login">
                             </div>
                         </div>
                         <div class="form-group">

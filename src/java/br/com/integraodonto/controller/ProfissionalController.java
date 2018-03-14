@@ -40,7 +40,7 @@ public class ProfissionalController {
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
 
-            if ("admin".equals(profissionalDTO.getNivel())) { // Verifica se usuário tem permissões
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
 
                 List<ProfissionalDTO> profissionalList = profissionalDAO.listar(profissionalDTO.getConsultorioID());
 
@@ -81,7 +81,7 @@ public class ProfissionalController {
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
 
-            if ("admin".equals(profissionalDTO.getNivel())) { // Verifica se usuário tem permissões
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
 
                 String hidden = menu.menu(profissionalDTO.getNivel());
                 ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
@@ -109,33 +109,53 @@ public class ProfissionalController {
     }
 
     @RequestMapping("/adicionando-profissional")
-    public String adiciona(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public String adiciona(ProfissionalDTO profissionalRequest, ContatoDTO contatoRequest, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
         ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
-        ProfissionalDTO profissional = new ProfissionalDTO();
-        ContatoDTO contatoDTO = new ContatoDTO();
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
 
-            if ("admin".equals(profissionalDTO.getNivel())) { // Verifica se usuário tem permissões
-                profissional.setNome(request.getParameter("nome"));
-                profissional.setSexo(request.getParameter("sexo"));
-                profissional.setEspecializacao(request.getParameter("especializacao"));
-                profissional.setCro(request.getParameter("cro"));
-                profissional.setCpf(request.getParameter("cpf"));
-                profissional.setRg(request.getParameter("rg"));
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
 
-                profissional.setLogin(request.getParameter("login"));
-                profissional.setSenha(request.getParameter("senha"));
-                profissional.setConsultorioID(profissionalDTO.getConsultorioID());
+                if (profissionalDAO.verificaSeEmailExisteProfissional(profissionalRequest.getLogin(), profissionalDTO.getConsultorioID()) == false) {
+                    profissionalRequest.setConsultorioID(profissionalDTO.getConsultorioID());
 
-                contatoDTO.setCelular(request.getParameter("celular"));
-                contatoDTO.setFixo(request.getParameter("fixo"));
-                contatoDTO.setEmail(request.getParameter("email"));
+                    profissionalDAO.adiciona(profissionalRequest, contatoRequest);
+                    return "redirect:todos-profissionais";
+                } else {
+                    System.out.println("Email pertence a um profissional ja cadastrado");
+                    response.sendRedirect("adiciona-profissional");
+                }
 
-                profissionalDAO.adiciona(profissional, contatoDTO);
+            } else {
+                response.sendRedirect("painel");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.close();
+
+            }
+        }
+        return null;
+    }
+
+    @RequestMapping("/alterando-profissional")
+    public String alterar(ProfissionalDTO profissionalRequest, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+
+        Connection connection = new MysqlConnectionPool().getConnection();
+        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
+
+        try {
+            ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
+
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
+
+                profissionalDAO.alterarProfissional(profissionalRequest, profissionalDTO.getConsultorioID());
 
                 return "redirect:todos-profissionais";
             } else {
@@ -151,5 +171,33 @@ public class ProfissionalController {
             }
         }
         return null;
+    }
+
+    @RequestMapping("/deletando-profissional")
+    public void deletar(ProfissionalDTO profissionalRequest, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+
+        Connection connection = new MysqlConnectionPool().getConnection();
+        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
+
+        try {
+            ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
+
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
+
+                profissionalDAO.alterarDeletadoProfissional(profissionalRequest, profissionalDTO.getConsultorioID());
+
+                response.setStatus(200);
+            } else {
+                response.sendRedirect("painel");
+            }
+
+        } catch (Exception e) {
+
+        } finally {
+            if (connection != null) {
+                connection.close();
+
+            }
+        }
     }
 }

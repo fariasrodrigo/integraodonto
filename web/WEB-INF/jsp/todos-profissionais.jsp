@@ -34,6 +34,8 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+        <script type="text/javascript" src="<c:url value="/resources/js/features/validation.js" />"></script>
+
         <script>
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -47,6 +49,24 @@
             })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
             ga('create', 'UA-19175540-9', 'auto');
             ga('send', 'pageview');
+
+            (function ($) {
+                remove = function (item) {
+                    var tr = $(item).closest('tr');
+                    tr.fadeOut(400, function () {
+                        tr.remove();
+                    });
+                    return false;
+                }
+            })(jQuery);
+
+            function depoisDeExcluir(dadosDoController) {
+                window.history.pushState({}, document.title, "todos-profissionais");
+                alert("Exluído com sucesso!");
+            }
+            function excluir(id) {
+                $.get("deletando-profissional?id=" + id, depoisDeExcluir);
+            }
         </script>
     </head>
 
@@ -179,7 +199,7 @@
                 <div class="container-fluid">
                     <div class="row bg-title">
                         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                            <h4 class="page-title"></h4>
+                            <h4 class="page-title">PROFISSIONAIS</h4>
                         </div>
                         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                             <ol class="breadcrumb">
@@ -193,7 +213,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-sm-12 col-xs-12">
                             <div class="white-box">
-                                <h3 class="box-title">PROFISSIONAIS</h3>
+                                <h3 class="box-title"></h3>
                                 <p class="text-muted m-b-30">Visualize e adicione profissionais aqui</p>
                                 <!-- Nav tabs -->
                                 <ul class="nav customtab nav-tabs" role="tablist">
@@ -206,7 +226,7 @@
                                         <div class="col-lg-12">
                                             <div class="white-box">
                                                 <div class="table-responsive">
-                                                    <table class="table table-hover table-bordered">
+                                                    <table class="table table-hover table-bordered" id="myTable">
                                                         <thead>
                                                             <tr>
                                                                 <th>Nome</th>
@@ -215,6 +235,7 @@
                                                                 <th>Email</th>
                                                                 <th>Login</th>
                                                                 <th>Senha</th>
+                                                                <th>Status</th>
                                                                 <th colspan="3">Interações</th>
                                                             </tr>
                                                         </thead>
@@ -227,9 +248,10 @@
                                                                     <td>${list.email}</td>
                                                                     <td>${list.login}</td>
                                                                     <td>${list.senha}</td>
+                                                                    <td>${list.stats}</td>
                                                                     <td><span class="text-muted"><i class="fa fa-calendar"></i> Configurar Agenda</span> </td>
-                                                                    <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                    <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
+                                                                    <td><a href='#' class="text-muted" data-toggle="modal" data-target=".bs-example-modal-lg" class="model_img img-responsive" onclick="setaAlteraProfissional(${list.id}, '${list.nome}', '${list.sexo}', '${list.especializacao}', '${list.cpf}', '${list.rg}', '${list.stats}', '${list.agenda}', '${list.login}', '${list.senha}', '${list.nivel}')"><i class="fa fa-edit"></i> Editar</a></td>
+                                                                    <td><a href='#' onclick="remove(this);excluir(${list.id})" class="text-muted"><i class="fa fa-trash-o"></i> Excluir</a></td>
                                                                 </tr>
                                                             </c:forEach>
                                                         </tbody>
@@ -298,6 +320,155 @@
             <!-- /#page-wrapper -->
         </div>
         <!-- /#wrapper -->
+
+        <!-- sample modal content -->
+        <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myLargeModalLabel"></h4>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="white-box">
+                            <form name="alteraProfissional" action="alterando-profissional" class="form-horizontal" method="post">
+                                <div class="form-body">
+                                    <h3 class="box-title">Informações Profissionais</h3>
+                                    <hr class="m-t-0 m-b-40">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">                                                
+                                                <div class="col-md-12">
+                                                    <input type="text" class="form-control" placeholder="" name="id" id="profissionalId" hidden>
+                                                    <input type="text" class="form-control" placeholder="Nome" name="nome" id="profissionalNome">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <select class="form-control" name="sexo" id="profissionalSexo">
+                                                        <option value="Masculino">Masculino</option>
+                                                        <option value="Feminino">Feminino</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/row-->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <select class="form-control" name="especializacao" id="profissionalEspecializacao">
+                                                        <option value="Cirurgião Dentista">Cirurgião Dentista</option>
+                                                        <option value="Implantodontista">Implantodontista</option>
+                                                        <option value="Odontohebiatria">Odontohebiatria</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3">Agenda?</label>
+                                                <div class="col-md-9">
+                                                    <select class="form-control" name="agenda" id="profissionalAgenda">
+                                                        <option value="sim">Sim</option>
+                                                        <option value="nao">Não</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                    </div>
+                                    <!--/row-->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <input type="text" placeholder="Digite o CPF" data-mask="999.999.999-99" class="form-control" name="cpf" id="profissionalCpf">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <input type="text" placeholder="Digite o RG" data-mask="99.999.999-99" class="form-control" name="rg" id="profissionalRg">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                    </div>
+                                    <!--/row-->
+
+                                    <h3 class="box-title">Dados de Acesso e Segurança</h3>
+                                    <hr class="m-t-0 m-b-40">
+                                    <!--/row-->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <input type="email" class="form-control" placeholder="Insira o login" name="login" id="profissionalLogin">
+                                                        <div class="input-group-addon"><i class="ti-user"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="Insira o email" name="senha" id="profissionalSenha">
+                                                        <div class="input-group-addon"><i class="ti-email"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                    </div>
+                                    <!--/row-->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <select class="form-control" name="stats" id="profissionalStats">
+                                                        <option value="ativo">Ativo</option>
+                                                        <option value="inativo">Inativo</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <select class="form-control" name="nivel" id="profissionalNivel">
+                                                        <option value="usuario">Usuário</option>
+                                                        <option value="admin">Administrador</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-warning waves-effect text-left">Alterar</button>
+                                    <button type="reset" class="btn btn-default" data-dismiss="modal">Limpar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
         <!-- jQuery -->
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/jquery/dist/jquery.min.js" />"></script>
         <!-- Bootstrap Core JavaScript -->
@@ -313,8 +484,8 @@
         <!-- Date Picker Plugin JavaScript -->
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.js" />"></script>
         <script type="text/javascript">
-            // Date Picker
-            jQuery('.mydatepicker').datepicker();
+                                                                        // Date Picker
+                                                                        jQuery('.mydatepicker').datepicker();
         </script>
         <!-- Custom Theme JavaScript -->
         <script type="text/javascript" src="<c:url value="/resources/js/custom.min.js" />"></script>

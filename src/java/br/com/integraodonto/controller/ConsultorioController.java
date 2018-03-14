@@ -44,7 +44,7 @@ public class ConsultorioController {
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
 
-            if ("admin".equals(profissionalDTO.getNivel())) { // Verifica se usuário tem permissões
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
 
                 String hidden = menu.menu(profissionalDTO.getNivel());
                 ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
@@ -106,6 +106,57 @@ public class ConsultorioController {
         }
 
         return "redirect:painel";
+    }
 
+    @RequestMapping("/alterando-consultorio")
+    public String alterar(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+
+        Connection connection = new MysqlConnectionPool().getConnection();
+        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
+        ConsultorioDTO consultorioDTO = new ConsultorioDTO();
+        ContatoDAO contatoDAO = new ContatoDAO(connection);
+        ContatoDTO contatoDTO = new ContatoDTO();
+        EnderecoDAO enderecoDAO = new EnderecoDAO(connection);
+        EnderecoDTO enderecoDTO = new EnderecoDTO();
+
+        try {
+            ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
+
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
+                consultorioDTO.setNome(request.getParameter("nome"));
+                consultorioDTO.setNomeResponsavel(request.getParameter("nomeResponsavel"));
+                consultorioDTO.setCnpj(request.getParameter("cnpj"));
+
+                contatoDTO.setCelular(request.getParameter("celular"));
+                contatoDTO.setFixo(request.getParameter("fixo"));
+                contatoDTO.setEmail(request.getParameter("email"));
+
+                enderecoDTO.setCep(request.getParameter("cep"));
+                enderecoDTO.setEndereco(request.getParameter("endereco"));
+                enderecoDTO.setNumero(request.getParameter("numero"));
+                enderecoDTO.setCompl(request.getParameter("compl"));
+                enderecoDTO.setBairro(request.getParameter("bairro"));
+                enderecoDTO.setCidade(request.getParameter("cidade"));
+                enderecoDTO.setEstado(request.getParameter("estado"));
+
+                ConsultorioDTO recuperandoConsultorioSession = consultorioDAO.recuperaConsultorio(profissionalDTO.getConsultorioID());
+                consultorioDAO.alterar(consultorioDTO, profissionalDTO.getConsultorioID());
+                contatoDAO.alterar(contatoDTO, recuperandoConsultorioSession.getContatoID());
+                enderecoDAO.alterar(enderecoDTO, recuperandoConsultorioSession.getEnderecoID());
+                return "redirect:consultorio";
+
+            } else {
+                response.sendRedirect("painel");
+            }
+
+        } catch (Exception e) {
+
+        } finally {
+            if (connection != null) {
+                connection.close();
+
+            }
+        }
+        return null;
     }
 }

@@ -39,7 +39,7 @@ public class ProcedimentosController {
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
 
-            if ("admin".equals(profissionalDTO.getNivel())) { // Verifica se usuário tem permissões
+            if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
 
                 String hidden = menu.menu(profissionalDTO.getNivel());
                 ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID

@@ -83,7 +83,7 @@
                         <fieldset>
                             <h2 class="fs-title">Configurações de Acesso</h2>
                             <h3 class="fs-subtitle">Crie agora os dados de acesso ao IntegraOdonto</h3>
-                            <input type="text" name="login" required="" placeholder="Crie o seu Login" />
+                            <input type="email" name="login" required="" placeholder="Crie o seu Login" />
                             <input type="password" name="senha1" required="" placeholder="Crie a sua Senha" />
                             <input type="password" name="senha2" required="" placeholder="Confirme a sua Senha" />
                             <input type="button" name="previous" class="previous action-button" value="Anterior" />

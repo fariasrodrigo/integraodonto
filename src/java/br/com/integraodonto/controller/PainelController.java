@@ -9,6 +9,7 @@ import br.com.integraodonto.pool.MysqlConnectionPool;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,7 @@ public class PainelController {
     }
 
     @RequestMapping("/painel")
-    public ModelAndView painel(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView painel(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
         ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
@@ -36,16 +37,22 @@ public class PainelController {
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
+            
+            if ("ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) {
 
-            String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+                String hidden = menu.menu(profissionalDTO.getNivel());
+                ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+                ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
-            mv.addObject("hidden", hidden);
-            mv.addObject("consultorio", consultorioDTO);
-            mv.addObject("profissional", profissional);
+                mv.addObject("hidden", hidden);
+                mv.addObject("consultorio", consultorioDTO);
+                mv.addObject("profissional", profissional);
 
-            return mv;
+                return mv;
+            } else {
+                response.sendRedirect("login");
+            }
+
         } catch (Exception e) {
 
         } finally {
@@ -54,6 +61,6 @@ public class PainelController {
 
             }
         }
-        return mv;
+        return null;
     }
 }
