@@ -1,8 +1,9 @@
 package br.com.integraodonto.controller;
 
-import br.com.integraodonto.dao.ConsultorioDAO;
+import br.com.integraodonto.bo.ConsultorioBO;
+import br.com.integraodonto.bo.PacienteBO;
+import br.com.integraodonto.bo.ProfissionalBO;
 import br.com.integraodonto.dao.PacienteDAO;
-import br.com.integraodonto.dao.ProfissionalDAO;
 import br.com.integraodonto.dto.ConsultorioDTO;
 import br.com.integraodonto.dto.ContatoDTO;
 import br.com.integraodonto.dto.EnderecoDTO;
@@ -16,7 +17,6 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,18 +28,21 @@ import org.springframework.web.servlet.ModelAndView;
 public class PacienteController {
 
     Menu menu;
+    PacienteBO pacienteBO;
+    ConsultorioBO consultorioBO;
+    ProfissionalBO profissionalBO;
 
     public PacienteController() {
         this.menu = new Menu();
+        this.pacienteBO = new PacienteBO();
+        this.consultorioBO = new ConsultorioBO();
+        this.profissionalBO = new ProfissionalBO();
     }
 
     @RequestMapping("/todos-pacientes")
-    public ModelAndView todosPacientes(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public ModelAndView todosPacientes(HttpServletRequest request, HttpServletResponse response) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
-        PacienteDAO pacienteDAO = new PacienteDAO(connection);
         ModelAndView mv = new ModelAndView("todos-pacientes");
 
         try {
@@ -48,9 +51,9 @@ public class PacienteController {
             if ("ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) {
 
                 String hidden = menu.menu(profissionalDTO.getNivel());
-                ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-                ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
-                List<PacienteDTO> pacientelList = pacienteDAO.listar(profissionalDTO.getConsultorioID());
+                ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+                ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+                List<PacienteDTO> pacientelList = pacienteBO.todosPacientesConsultorio(profissionalDTO.getConsultorioID());
 
                 mv.addObject("pacienteList", pacientelList);
                 mv.addObject("hidden", hidden);
@@ -63,28 +66,26 @@ public class PacienteController {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (connection != null) {
                 connection.close();
 
             }
         }
-        return mv;
+        return null;
     }
 
     @RequestMapping("/deletando-paciente")
-    public void deletar(PacienteDTO pacienteRequest, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
-
-        Connection connection = new MysqlConnectionPool().getConnection();
-        PacienteDAO pacienteDAO = new PacienteDAO(connection);
+    public void deletar(PacienteDTO pacienteRequest, HttpServletRequest request, HttpServletResponse response) throws SQLException {
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
 
             if ("ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
 
-                pacienteDAO.alterarDeletadoPaciente(pacienteRequest, profissionalDTO.getConsultorioID());
+                pacienteRequest.setConsultorioID(profissionalDTO.getConsultorioID());
+                pacienteBO.alterarDeletadoPaciente(pacienteRequest);
 
                 response.setStatus(200);
             } else {
@@ -92,21 +93,40 @@ public class PacienteController {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
-            if (connection != null) {
-                connection.close();
 
-            }
         }
     }
 
+    @RequestMapping("/alterando-paciente")
+    public String alterandoPaciente(PacienteDTO pacienteRequest, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+
+        try {
+            ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
+
+            if ("ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
+
+                pacienteRequest.setConsultorioID(profissionalDTO.getConsultorioID());
+                pacienteBO.altera(pacienteRequest);
+
+                return "redirect:" + request.getHeader("Referer");
+            } else {
+                response.sendRedirect("painel");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+
+        }
+        return null;
+    }
+
     @RequestMapping("/adiciona-paciente")
-    public ModelAndView adicionaPaciente(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public ModelAndView adicionaPaciente(HttpServletRequest request, HttpServletResponse response) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("adiciona-paciente");
 
         try {
@@ -115,8 +135,8 @@ public class PacienteController {
             if ("ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) {
 
                 String hidden = menu.menu(profissionalDTO.getNivel());
-                ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-                ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+                ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+                ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
                 mv.addObject("hidden", hidden);
                 mv.addObject("consultorio", consultorioDTO);
@@ -129,18 +149,18 @@ public class PacienteController {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (connection != null) {
                 connection.close();
 
             }
         }
-        return mv;
+        return null;
     }
 
     @RequestMapping("/adicionando-paciente")
-    public String adiciona(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public String adiciona(HttpServletRequest request, HttpServletResponse response) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
         PacienteDAO pacienteDAO = new PacienteDAO(connection);
@@ -188,7 +208,7 @@ public class PacienteController {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (connection != null) {
                 connection.close();
@@ -199,50 +219,46 @@ public class PacienteController {
     }
 
     @RequestMapping("/editar-paciente")
-    public ModelAndView editarPaciente(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView editarPaciente(String id, HttpServletRequest request) throws SQLException {
 
-        Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("editar-paciente");
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
+            long url = Long.parseLong(id);
+            PacienteDTO pacientePorId = pacienteBO.pacientePorId(url, profissionalDTO.getConsultorioID());
+
+            mv.addObject("paciente", pacientePorId);
             mv.addObject("hidden", hidden);
             mv.addObject("consultorio", consultorioDTO);
             mv.addObject("profissional", profissional);
 
             return mv;
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
-            if (connection != null) {
-                connection.close();
 
-            }
         }
         return mv;
     }
 
     @RequestMapping("/consultas-paciente")
-    public ModelAndView consultasPacientes(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView consultasPacientes(HttpServletRequest request) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("consultas-paciente");
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
             mv.addObject("hidden", hidden);
             mv.addObject("consultorio", consultorioDTO);
@@ -250,7 +266,7 @@ public class PacienteController {
 
             return mv;
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (connection != null) {
                 connection.close();
@@ -261,19 +277,17 @@ public class PacienteController {
     }
 
     @RequestMapping("/anamnese-paciente")
-    public ModelAndView anamnesePacientes(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView anamnesePacientes(HttpServletRequest request) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("anamnese-paciente");
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
             mv.addObject("hidden", hidden);
             mv.addObject("consultorio", consultorioDTO);
@@ -292,19 +306,17 @@ public class PacienteController {
     }
 
     @RequestMapping("/financeiro-paciente")
-    public ModelAndView financeiroPacientes(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView financeiroPacientes(HttpServletRequest request) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("financeiro-paciente");
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
             mv.addObject("hidden", hidden);
             mv.addObject("consultorio", consultorioDTO);
@@ -323,19 +335,17 @@ public class PacienteController {
     }
 
     @RequestMapping("/arquivos-paciente")
-    public ModelAndView arquivosPacientes(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView arquivosPacientes(HttpServletRequest request) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("arquivos-paciente");
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
             mv.addObject("hidden", hidden);
             mv.addObject("consultorio", consultorioDTO);
@@ -354,19 +364,17 @@ public class PacienteController {
     }
 
     @RequestMapping("/orcamentos-paciente")
-    public ModelAndView orcamentosPacientes(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView orcamentosPacientes(HttpServletRequest request) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("orcamentos-paciente");
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
             mv.addObject("hidden", hidden);
             mv.addObject("consultorio", consultorioDTO);
@@ -385,19 +393,17 @@ public class PacienteController {
     }
 
     @RequestMapping("/procedimentos-paciente")
-    public ModelAndView procedimentosPacientes(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView procedimentosPacientes(HttpServletRequest request) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("procedimentos-paciente");
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
             mv.addObject("hidden", hidden);
             mv.addObject("consultorio", consultorioDTO);
@@ -416,19 +422,17 @@ public class PacienteController {
     }
 
     @RequestMapping("/receituario-paciente")
-    public ModelAndView receituarioPacientes(HttpSession session, HttpServletRequest request) throws SQLException {
+    public ModelAndView receituarioPacientes(HttpServletRequest request) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ModelAndView mv = new ModelAndView("receituario-paciente");
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando");
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
             mv.addObject("hidden", hidden);
             mv.addObject("consultorio", consultorioDTO);

@@ -2,6 +2,7 @@ package br.com.integraodonto.dao;
 
 import br.com.integraodonto.dto.ConsultorioDTO;
 import br.com.integraodonto.dto.ProfissionalDTO;
+import br.com.integraodonto.features.FormataSqlProcedimento;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,9 +14,11 @@ import java.util.List;
 public class ConsultorioDAO {
 
     private final Connection connection;
+    FormataSqlProcedimento formataSqlProcedimento;
 
     public ConsultorioDAO(Connection connection) throws SQLException {
         this.connection = connection;
+        this.formataSqlProcedimento = new FormataSqlProcedimento();
     }
 
     public void adicionaConsultorio(ConsultorioDTO consultorio, ProfissionalDTO profissional) throws SQLException {
@@ -26,6 +29,8 @@ public class ConsultorioDAO {
 
         connection.setAutoCommit(false);
 
+        ProcedimentoDAO procedimentoDAO = new ProcedimentoDAO(connection);
+
         try {
 
             int idConsultorio = 0;
@@ -33,7 +38,7 @@ public class ConsultorioDAO {
             int idContatoC = 0;
             int idContatoP = 0;
 
-            String sqlConsultorio = "INSERT INTO consultorio (nome, stats, deletado, contato, endereco) VALUES (?,?,?,?,?);";
+            String sqlConsultorio = "INSERT INTO consultorio (nome, cnpj, stats, deletado, contato, endereco) VALUES (?,?,?,?,?,?);";
             String sqlEndereco = "INSERT INTO endereco (compl) VALUES (?);";
             String sqlContato = "INSERT INTO contato (email) VALUES (?);";
             String sqlProfissional = "INSERT INTO profissional (nome, stats, deletado, nivel, login, senha, contato, consultorio) VALUES (?,?,?,?,?,?,?,?);";
@@ -86,10 +91,11 @@ public class ConsultorioDAO {
             //adicionando e recuperando id consultório
             try (PreparedStatement psConsultorio = connection.prepareStatement(sqlConsultorio, Statement.RETURN_GENERATED_KEYS);) {
                 psConsultorio.setString(1, consultorio.getNome());
-                psConsultorio.setString(2, "ativo");
-                psConsultorio.setString(3, "nao");
-                psConsultorio.setLong(4, idContatoC);
-                psConsultorio.setLong(5, idEndereco);
+                psConsultorio.setString(2, consultorio.getCnpj());
+                psConsultorio.setString(3, "ativo");
+                psConsultorio.setString(4, "nao");
+                psConsultorio.setLong(5, idContatoC);
+                psConsultorio.setLong(6, idEndereco);
                 psConsultorio.execute();
 
                 final ResultSet rsConsultorio = psConsultorio.getGeneratedKeys();
@@ -120,6 +126,9 @@ public class ConsultorioDAO {
 
             }
 
+            //adicionando procedimentos iniciais
+            procedimentoDAO.adicionaProcedimentosIniciais(formataSqlProcedimento.FormataSqlProcedimento(idConsultorio), idConsultorio);
+
             connection.commit();
         } catch (RuntimeException e) {
             connection.rollback();
@@ -130,10 +139,10 @@ public class ConsultorioDAO {
 
     }
 
-    public List<ConsultorioDTO> listar(int sessionID) {
+    public List<ConsultorioDTO> listar() {
 
         List<ConsultorioDTO> results = new ArrayList<>();
-        String sql = "SELECT id, nome, nome_responsavel, cnpj, cpf, stats, deletado, contato, endereco FROM consultorio WHERE id = " + sessionID + ";";
+        String sql = "SELECT id, nome, nome_responsavel, cnpj, stats, deletado, contato, endereco FROM consultorio ;";
         try (PreparedStatement stmt = connection.prepareStatement(sql);
                 ResultSet resultSet = stmt.executeQuery()) {
 
@@ -141,6 +150,7 @@ public class ConsultorioDAO {
                 results.add(popular(resultSet));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
 
@@ -161,36 +171,6 @@ public class ConsultorioDAO {
         consultorioDTO.setEnderecoID(rs.getInt("endereco"));
 
         return consultorioDTO;
-    }
-
-    public ConsultorioDTO buscaPorId(int sessionID) throws SQLException {
-
-        if (sessionID == 0) {
-            throw new IllegalArgumentException("sessionID não deve ser nulo");
-        }
-
-        ConsultorioDTO consultorioDTO = new ConsultorioDTO();
-        String sql = "SELECT id, nome, nome_responsavel, cnpj, stats, deletado, contato, endereco FROM consultorio WHERE id = " + sessionID + ";";
-        try (PreparedStatement stmt = connection.prepareStatement(sql);) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    consultorioDTO.setId(rs.getInt("id"));
-                    consultorioDTO.setNome(rs.getString("nome"));
-                    consultorioDTO.setNomeResponsavel(rs.getString("nome_responsavel"));
-                    consultorioDTO.setCnpj(rs.getString("cnpj"));
-                    consultorioDTO.setStats(rs.getString("stats"));
-                    consultorioDTO.setDeletado(rs.getString("deletado"));
-                    consultorioDTO.setContatoID(rs.getInt("contato"));
-                    consultorioDTO.setEnderecoID(rs.getInt("endereco"));
-                    return consultorioDTO;
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-
-        }
-        return null;
     }
 
     public ConsultorioDTO recuperaConsultorio(long id) throws SQLException {

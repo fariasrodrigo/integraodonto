@@ -1,6 +1,6 @@
 package br.com.integraodonto.controller;
 
-import br.com.integraodonto.dao.ProfissionalDAO;
+import br.com.integraodonto.bo.ProfissionalBO;
 import br.com.integraodonto.dto.ProfissionalDTO;
 import br.com.integraodonto.pool.MysqlConnectionPool;
 import java.sql.Connection;
@@ -26,15 +26,15 @@ public class LoginController {
     public String efetuaLogin(ProfissionalDTO profissional, HttpSession session, RedirectAttributes model) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
-        ProfissionalDTO profissionalDTO = profissionalDAO.retornaDadosProfissionalLogado(profissional);
+        ProfissionalBO profissionalBO = new ProfissionalBO();
+        ProfissionalDTO profissionalDTO = profissionalBO.retornaDadosProfissionalLogado(profissional);
 
         try {
             if (profissionalDTO != null) {
                 if ("ativo".equals(profissionalDTO.getStats())) {
                     if ("nao".equals(profissionalDTO.getDeletado())) {
 
-                        session.setAttribute("logando", profissional);
+                        session.setAttribute("logando", profissionalDTO);
                         return "redirect:painel";
 
                     } else {
@@ -52,7 +52,7 @@ public class LoginController {
                 return "redirect:login";
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (connection != null) {
                 connection.close();

@@ -15,6 +15,7 @@
         <title>IntegraOdonto - Hospital admin dashboard web app kit</title>
         <!-- Jquery -->
         <script type="text/javascript" src="<c:url value="https://code.jquery.com/jquery-1.9.1.js" />"></script>
+        <script type="text/javascript" src="<c:url value="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" />"></script>
         <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/bootstrap/dist/css/bootstrap.min.css" />" />
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-extension/css/bootstrap-extension.css" />" />
@@ -25,13 +26,23 @@
         <!-- Custom CSS -->
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/style.css" />" />
         <!-- color CSS -->
-        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/colors/megna.css" />" />
+        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/colors/megna.css" />" />       
+        <!-- Date picker plugins css -->
+        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.css" />" />
+
+        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/custom-select/custom-select.css" />" />
+        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-select/bootstrap-select.min.css" />" />        
+        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.css" />" />
+        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/multiselect/css/multi-select.css" />" />
+        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-daterangepicker/daterangepicker.css" />" />
+        <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/timepicker/bootstrap-timepicker.min.css" />" />
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+        <script type="text/javascript" src="<c:url value="/resources/js/features/validation.js" />"></script>
     </head>
 
     <body>
@@ -163,7 +174,7 @@
                 <div class="container-fluid">
                     <div class="row bg-title">
                         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                            <h4 class="page-title"></h4>
+                            <h4 class="page-title">PAINEL</h4>
                         </div>
                         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                             <ol class="breadcrumb">
@@ -227,98 +238,40 @@
                             <div class="white-box">
                                 <!--  <h3 class="box-title m-b-0">Fluxo de Atendimento</h3> -->
                                 <ul class="pager">
-                                    <li class="previous"> <a href="#">Agendar</a> </li>
+                                    <li class="previous"> <a href="#" data-toggle="modal" data-target=".bs-example-modal-lg-adiciona">Agendar</a> </li>
                                     <li class="next"> <a href="#"><span class="text-muted"><i class="fa fa-calendar"></i></span></a> </li>
                                     <li class="next"> <a href="#">Mês</a> </li>
                                     <li class="next"> <a href="#">Semana</a> </li>
-                                    <li class="next"> <a href="#">July 3 →</a> </li>
-                                    <li class="next"> <a href="#">← July 1</a> </li>
+                                    <li class="next"> <a href="#">${depois} →</a> </li>
+                                    <li class="next"> <a href="#">← ${antes}</a> </li>
                                 </ul>
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
                                             <tr>
                                                 <th>Status</th>
-                                                <th>Horário</th>
+                                                <th>Início</th>
                                                 <th>Paciente</th>
-                                                <th>Telefone</th>
+                                                <th>Contato</th>
                                                 <th>Profissional</th>
-                                                <th>Procedimento</th>
+                                                <th>Observação</th>
                                                 <th colspan="2">Interações</th>
 
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td><span class="label label-success">Atendido</span> </td>
-                                                <td>11:30</td>
-                                                <td>Bruno Martins</td>
-                                                <td>(71) 99999-8810</td>
-                                                <td>Dr. Ronald McDonald</td>
-                                                <td><span class="label label-danger">Extração</span> </td>
-                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Reagendar</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="label label-info">Confirmado</span> </td>
-                                                <td>12:30</td>
-                                                <td>Ricardo Chastinet</td>
-                                                <td>(71) 99999-8810</td>
-                                                <td>Dr. Ronald McDonald</td>
-                                                <td><span class="label label-danger">Extração</span> </td>
-                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Reagendar</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="label label-info">Confirmado</span> </td>
-                                                <td>13:30</td>
-                                                <td>Elinaldo Rodrigues</td>
-                                                <td>(71) 99999-8810</td>
-                                                <td>Dr. Ronald McDonald</td>
-                                                <td><span class="label label-danger">Extração</span> </td>
-                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Reagendar</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="label label-warning">A Confirmar</span> </td>
-                                                <td>14:30</td>
-                                                <td>Leandro Rodrigues</td>
-                                                <td>(71) 99999-8810</td>
-                                                <td>Dr. Ronald McDonald</td>
-                                                <td><span class="label label-info">Limpeza</span> </td>
-                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Reagendar</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="label label-info">Confirmado</span> </td>
-                                                <td>15:30</td>
-                                                <td>Elizama Farias</td>
-                                                <td>(71) 99999-8810</td>
-                                                <td>Dr. Ronald McDonald</td>
-                                                <td><span class="label label-danger">Extração</span> </td>
-                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Reagendar</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="label label-info">Confirmado</span> </td>
-                                                <td>16:30</td>
-                                                <td>Marcos Sales</td>
-                                                <td>(71) 99999-8810</td>
-                                                <td>Dr. Ronald McDonald</td>
-                                                <td><span class="label label-danger">Extração</span> </td>
-                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Reagendar</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="label label-warning">A Confirmar</span> </td>
-                                                <td>17:30</td>
-                                                <td>Rodrigo Farias</td>
-                                                <td>(71) 99999-8810</td>
-                                                <td>Dr. Ronald McDonald</td>
-                                                <td><span class="label label-danger">Extração</span> </td>
-                                                <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Reagendar</span></td>
-                                            </tr>
+                                            <c:forEach items="${consultaList}" var="list">
+                                                <tr>
+                                                    <td><span class="label label-success">${list.statusConsulta}</span> </td>
+                                                    <td>${list.horarioInicioConsulta}</td>
+                                                    <td>${list.pacienteTemp}</td>
+                                                    <td>${list.celular}</td>
+                                                    <td>${list.profissionalTemp}</td>
+                                                    <td>${list.obs}</td>
+                                                    <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
+                                                    <td><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg-altera" class="text-muted" onclick="setaAlteraAgendamento(${list.id}, '${list.pacienteTemp}', '${list.dataConsulta}', '${list.horarioInicioConsulta}', '${list.horarioFimConsulta}', '${list.profissionalTemp}', '${list.obs}', '${list.statusConsulta}', '${list.lembreteSMS}', '${list.lembreteEMAIL}')"><i class="fa fa-edit"></i> Reagendar</a></td>
+                                                </tr>
+                                            </c:forEach>
                                         </tbody>
                                     </table>
                                 </div>
@@ -380,6 +333,301 @@
             <!-- /#page-wrapper -->
         </div>
         <!-- /#wrapper -->
+
+        <!-- sample modal adiciona content -->
+        <div class="modal fade bs-example-modal-lg-adiciona" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header modal-header-success">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myLargeModalLabel">Agendar Consulta</h4>
+                    </div>
+                    <form action="agendando-consulta" class="form-horizontal">
+                        <div class="modal-body">                        
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-8">
+                                                <select class="form-control select2" name="pacienteID">
+                                                    <option value=ativo">Selecione um paciente</option>
+                                                    <c:forEach items="${pacienteList}" var="list">
+                                                        <option value="${list.id}">${list.nome}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button class="btn btn-block btn-outline btn-success">Adicionar Paciente</button>                                              
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <input type="text" class="complex-colorpicker form-control" id="datepicker-autoclose" placeholder="Data da consulta" data-mask="99/99/9999" name="dataConsulta">
+                                                        <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="Início da consulta" min="4" max="4" data-mask="99:99" name="horarioInicioConsulta">
+                                                        <div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="Fim da consulta" min="4" max="4" data-mask="99:99" name="horarioFimConsulta">
+                                                        <div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/row-->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <select class="form-control select2" name="profissionalID">
+                                                    <option value="">Selecione um profissional</option>
+                                                    <c:forEach items="${profissionalList}" var="list">
+                                                        <option value="${list.id}">${list.nome}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <input type="text" class="form-control" placeholder="Observações ex: Avaliação, Orçamento e etc..." name="obs">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <select class="form-control" name="statusConsulta">
+                                                        <option value="Status da consulta">Status da consulta</option>
+                                                        <option value="Agendada">Agendada</option>
+                                                        <option value="Confirmada">Confirmada</option>
+                                                        <option value="Finalizada">Finalizada</option>
+                                                        <option value="Cancelada">Cancelada</option>
+                                                        <option value="Faltou">Faltou</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <select class="form-control" name="lembreteSMS">
+                                                            <option value="">Lembrete via SMS</option>
+                                                            <option value="sim">Sim</option>
+                                                            <option value="nao">Não</option>
+                                                        </select>
+                                                        <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <select class="form-control" name="lembreteEMAIL">
+                                                            <option value="">Lembrete via EMAIL</option>
+                                                            <option value="sim">Sim</option>
+                                                            <option value="nao">Não</option>
+                                                        </select>
+                                                        <div class="input-group-addon"><i class="fa fa-send"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/row-->
+                            </div>                        
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12">
+                                    <div class="modal-footer">                            
+                                        <button type="button" class="btn btn-default waves-effect text-left" data-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-success">Agendar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- sample modal altera content -->
+        <div class="modal fade bs-example-modal-lg-altera" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header modal-header-success">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myLargeModalLabel">Reagendar Consulta</h4>
+                    </div>
+                    <form action="reagendando-consulta" class="form-horizontal">
+                        <div class="modal-body">                        
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <input type="text" name="id" id="alteraId" hidden>
+                                                <input type="text" class="form-control" name="" id="alteraPaciente" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">                                                        
+                                                        <input type="text" class="complex-colorpicker form-control" id="alteraData" placeholder="Data da consulta" data-mask="99/99/9999" name="dataConsulta">
+                                                        <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="Início da consulta" min="4" max="4" id="alteraInicio" data-mask="99:99" name="horarioInicioConsulta">
+                                                        <div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="Fim da consulta" min="4" max="4" id="alteraFim" data-mask="99:99" name="horarioFimConsulta">
+                                                        <div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/row-->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <input type="text" class="form-control" name="" id="alteraProfissional" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <input type="text" class="form-control" placeholder="Observações ex: Avaliação, Orçamento e etc..." name="obs" id="alteraObs">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <select class="form-control" name="statusConsulta" id="alteraStats">
+                                                        <option value="Status da consulta">Status da consulta</option>
+                                                        <option value="Agendada">Agendada</option>
+                                                        <option value="Confirmada">Confirmada</option>
+                                                        <option value="Finalizada">Finalizada</option>
+                                                        <option value="Cancelada">Cancelada</option>
+                                                        <option value="Faltou">Faltou</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <select class="form-control" name="lembreteSMS" id="alteraSms">
+                                                            <option value="">Lembrete via SMS</option>
+                                                            <option value="sim">Sim</option>
+                                                            <option value="nao">Não</option>
+                                                        </select>
+                                                        <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <select class="form-control" name="lembreteEMAIL" id="alteraEmail">
+                                                            <option value="">Lembrete via EMAIL</option>
+                                                            <option value="sim">Sim</option>
+                                                            <option value="nao">Não</option>
+                                                        </select>
+                                                        <div class="input-group-addon"><i class="fa fa-send"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/row-->
+                            </div>                        
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12">
+                                    <div class="modal-footer">                            
+                                        <button type="button" class="btn btn-default waves-effect text-left" data-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-warning">Reagendar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
         <!-- jQuery -->
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/jquery/dist/jquery.min.js" />"></script>
         <!-- Bootstrap Core JavaScript -->
@@ -399,7 +647,49 @@
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/peity/jquery.peity.init.js" />"></script>
         <!-- Custom Theme JavaScript -->
         <script type="text/javascript" src="<c:url value="/resources/js/custom.min.js" />"></script>
-        <script type="text/javascript" src="<c:url value="/resources/js/dashboard1.js" />"></script>
+        <script type="text/javascript" src="<c:url value="/resources/js/mask.js" />"></script>
+
+        <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/custom-select/custom-select.min.js" />"></script>
+        <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/bootstrap-select/bootstrap-select.min.js" />"></script>
+        <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/switchery/dist/switchery.min.js" />"></script>
+        <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/multiselect/js/jquery.multi-select.js" />"></script>
+        <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.js" />"></script>
+        <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/timepicker/bootstrap-timepicker.min.js" />"></script>
+        <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/bootstrap-daterangepicker/daterangepicker.js" />"></script>
+
+        <script>
+                                                        // Switchery
+                                                        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+                                                        $('.js-switch').each(function () {
+                                                            new Switchery($(this)[0], $(this).data());
+
+                                                        });
+
+                                                        // For select 2
+                                                        $(".select2").select2();
+                                                        $('.selectpicker').selectpicker();
+
+                                                        jQuery('.mydatepicker, #datepicker').datepicker();
+                                                        jQuery('#datepicker-autoclose').datepicker({
+                                                            autoclose: true,
+                                                            todayHighlight: true
+                                                        });
+
+                                                        // Date Picker
+                                                        jQuery('.mydatepicker, #datepicker').datepicker();
+                                                        jQuery('#datepicker-autoclose').datepicker({
+                                                            autoclose: true,
+                                                            todayHighlight: true
+                                                        });
+
+                                                        jQuery('#date-range').datepicker({
+                                                            toggleActive: true
+                                                        });
+                                                        jQuery('#datepicker-inline').datepicker({
+
+                                                            todayHighlight: true
+                                                        });
+        </script>
         <!--Style Switcher -->
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/styleswitcher/jQuery.style.switcher.js" />"></script>
 

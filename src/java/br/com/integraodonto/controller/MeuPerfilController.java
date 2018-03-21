@@ -1,8 +1,8 @@
 package br.com.integraodonto.controller;
 
-import br.com.integraodonto.dao.ConsultorioDAO;
+import br.com.integraodonto.bo.ConsultorioBO;
+import br.com.integraodonto.bo.ProfissionalBO;
 import br.com.integraodonto.dao.ContatoDAO;
-import br.com.integraodonto.dao.ProfissionalDAO;
 import br.com.integraodonto.dto.ConsultorioDTO;
 import br.com.integraodonto.dto.ContatoDTO;
 import br.com.integraodonto.dto.ProfissionalDTO;
@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,17 +20,18 @@ import org.springframework.web.servlet.ModelAndView;
 public class MeuPerfilController {
 
     Menu menu;
+    ConsultorioBO consultorioBO;
+    ProfissionalBO profissionalBO;
 
     public MeuPerfilController() {
         this.menu = new Menu();
+        this.consultorioBO = new ConsultorioBO();
+        this.profissionalBO = new ProfissionalBO();
     }
 
     @RequestMapping("/meu-perfil")
-    public ModelAndView meuPerfil(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public ModelAndView meuPerfil(HttpServletRequest request, HttpServletResponse response) throws SQLException {
 
-        Connection connection = new MysqlConnectionPool().getConnection();
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
         ModelAndView mv = new ModelAndView("meu-perfil");
         String readOnly = "";
 
@@ -46,8 +46,8 @@ public class MeuPerfilController {
             }
 
             String hidden = menu.menu(profissionalDTO.getNivel());
-            ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-            ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+            ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+            ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
 
             mv.addObject("readonly", readOnly);
             mv.addObject("hidden", hidden);
@@ -59,19 +59,15 @@ public class MeuPerfilController {
         } catch (Exception e) {
 
         } finally {
-            if (connection != null) {
-                connection.close();
 
-            }
         }
         return null;
     }
 
     @RequestMapping("/alterando-perfil")
-    public String alterar(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public String alterar(HttpServletRequest request, HttpServletResponse response) throws SQLException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
         ProfissionalDTO profissional = new ProfissionalDTO();
         ContatoDAO contatoDAO = new ContatoDAO(connection);
         ContatoDTO contatoDTO = new ContatoDTO();
@@ -84,6 +80,8 @@ public class MeuPerfilController {
                 profissional.setSexo(request.getParameter("sexo"));
                 profissional.setCpf(request.getParameter("cpf"));
                 profissional.setRg(request.getParameter("rg"));
+                profissional.setConsultorioID(profissionalDTO.getConsultorioID());
+                profissional.setId(profissionalDTO.getId());
 
                 profissional.setLogin(request.getParameter("login"));
                 profissional.setSenha(request.getParameter("senha"));
@@ -92,8 +90,9 @@ public class MeuPerfilController {
                 contatoDTO.setFixo(request.getParameter("fixo"));
                 contatoDTO.setEmail(request.getParameter("email"));
 
-                profissionalDAO.alterarMeuPerfilAdmin(profissional, profissionalDTO.getId(), profissionalDTO.getConsultorioID());
-                contatoDAO.alterar(contatoDTO, profissionalDTO.getContatoID());
+                profissionalBO.alterarMeuPerfilAdmin(profissional);
+                contatoDTO.setId(profissionalDTO.getContatoID());
+                contatoDAO.alterar(contatoDTO);
 
                 return "redirect:meu-perfil";
 
@@ -108,8 +107,9 @@ public class MeuPerfilController {
                 contatoDTO.setFixo(request.getParameter("fixo"));
                 contatoDTO.setEmail(request.getParameter("email"));
 
-                profissionalDAO.alterarMeuPerfilUsuario(profissional, profissionalDTO.getId(), profissionalDTO.getConsultorioID());
-                contatoDAO.alterar(contatoDTO, profissionalDTO.getContatoID());
+                profissionalBO.alterarMeuPerfilUsuario(profissional);
+                contatoDTO.setId(profissionalDTO.getContatoID());
+                contatoDAO.alterar(contatoDTO);
 
                 return "redirect:meu-perfil";
             } else {

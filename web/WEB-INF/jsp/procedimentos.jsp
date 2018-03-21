@@ -34,6 +34,9 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+        <script type="text/javascript" src="<c:url value="/resources/js/features/validation.js" />"></script>
+
         <script>
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -47,6 +50,24 @@
             })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
             ga('create', 'UA-19175540-9', 'auto');
             ga('send', 'pageview');
+
+            (function ($) {
+                remove = function (item) {
+                    var tr = $(item).closest('tr');
+                    tr.fadeOut(400, function () {
+                        tr.remove();
+                    });
+                    return false;
+                }
+            })(jQuery);
+
+            function depoisDeExcluir(dadosDoController) {
+                window.history.pushState({}, document.title, "procedimentos");
+                alert("Exluído com sucesso!");
+            }
+            function excluir(id) {
+                $.get("deletando-procedimento?id=" + id, depoisDeExcluir);
+            }
         </script>
     </head>
 
@@ -121,7 +142,7 @@
                             </ul>
                         </li>
                         <li class="nav-small-cap m-t-10">--- Menu</li>
-                        <li> <a href="painel" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu">Painel</span></a> </li>
+                        <li> <a href="painel" class="waves-effect"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu">Painel</span></a> </li>
                         <li> <a href="javascript:void(0);" class="waves-effect"><i class="ti-calendar p-r-10"></i> <span class="hide-menu"> Agenda <span class="fa arrow"></span></span></a>
                             <ul class="nav nav-second-level">
                                 <li> <a href="#">Doctor Schedule</a></li>
@@ -158,7 +179,7 @@
                             </ul>
                         </li>
 
-                        <li> <a href="javascript:void(0);" class="waves-effect"><i data-icon="P" class="linea-icon linea-basic fa-fw"></i> <span class="hide-menu"> Configurações <span class="fa arrow"></span></span></a>
+                        <li> <a href="javascript:void(0);" class="waves-effect active"><i data-icon="P" class="linea-icon linea-basic fa-fw"></i> <span class="hide-menu"> Configurações <span class="fa arrow"></span></span></a>
                             <ul class="nav nav-second-level">
                                 <li> <a href="meu-perfil">Meu Perfil</a></li>
                                 <li> <a href="consultorio" ${hidden}>Meu Consultório</a></li>
@@ -205,7 +226,7 @@
                                         <div class="col-lg-12">
                                             <div class="white-box">
                                                 <ul class="pager">
-                                                    <li class="previous"> <a data-toggle="modal" data-target=".bs-example-modal-lg" class="model_img img-responsive"> Adicionar Procedimento</a> </li>
+                                                    <li class="previous"> <a data-toggle="modal" data-target=".bs-example-modal-lg-adiciona" class="model_img img-responsive"> Adicionar Procedimento</a> </li>
                                                 </ul>
                                                 <div class="table-responsive">
                                                     <table class="table table-hover table-bordered">
@@ -213,44 +234,22 @@
                                                             <tr>
                                                                 <th>Procedimento</th>
                                                                 <th>Valor</th>
-                                                                <th>Observação</th>
+                                                                <th>Descrição</th>
                                                                 <th>Status</th>
                                                                 <th colspan="2">Interações</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td>Acido Hialuronico</td>
-                                                                <td>R$ 1.200,00</td>
-                                                                <td>Tratamento demorado</td>
-                                                                <td><span class="label label-success">Ativo</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Ajuste de Protese</td>
-                                                                <td>R$ 1.550,00</td>
-                                                                <td>Tratamento demorado</td>
-                                                                <td><span class="label label-danger">Inativo</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Cimentação</td>
-                                                                <td>R$ 1.700,00</td>
-                                                                <td>Tratamento demorado</td>
-                                                                <td><span class="label label-danger">Inativo</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Botox</td>
-                                                                <td>R$ 1.150,00</td>
-                                                                <td>Tratamento demorado</td>
-                                                                <td><span class="label label-success">Ativo</span> </td>
-                                                                <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                <td><span class="text-muted"><i class="fa fa-trash-o"></i> Excluir</span></td>
-                                                            </tr>
+                                                            <c:forEach items="${procedimentoList}" var="list">
+                                                                <tr>
+                                                                    <td>${list.nome}</td>
+                                                                    <td>R$ ${list.valor}</td>
+                                                                    <td>${list.obs}</td>
+                                                                    <td><span class="label label-success">${list.stats}</span> </td>
+                                                                    <td><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg-altera" class="text-muted" onclick="setaAlteraProcedimento(${list.id}, '${list.nome}', '${list.valor}', '${list.obs}', '${list.stats}')"><i class="fa fa-edit"></i> Editar</a></td>
+                                                                    <td><a href='#' onclick="remove(this);excluir(${list.id})" class="text-muted"><i class="fa fa-trash-o"></i> Excluir</a></td>
+                                                                </tr>
+                                                            </c:forEach>
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -318,24 +317,23 @@
         </div>
         <!-- /#wrapper -->
 
-        <!-- sample modal content -->
-        <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+        <!-- sample modal adiciona content -->
+        <div class="modal fade bs-example-modal-lg-adiciona" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         <h4 class="modal-title" id="myLargeModalLabel">Adicionar Procedimento</h4>
                     </div>
-                    <form action="#" class="form-horizontal">
+                    <form action="adicionando-procedimento" class="form-horizontal">
                         <div class="modal-body">                        
                             <div class="form-body">
-                                <hr class="m-t-0 m-b-40">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Nome do Procedimento</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" placeholder="">
+                                                <input type="text" class="form-control" placeholder="" name="nome">
                                             </div>
                                         </div>
                                     </div>
@@ -346,9 +344,9 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Situação</label>
                                             <div class="col-md-9">
-                                                <select class="form-control">
-                                                    <option value="">Ativo</option>
-                                                    <option value="">Inativo</option>
+                                                <select class="form-control" name="stats">
+                                                    <option value="ativo">Ativo</option>
+                                                    <option value="inativo">Inativo</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -360,7 +358,7 @@
                                             <label class="control-label col-md-3">Valor</label>
                                             <div class="col-md-9">
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control" placeholder="R$" data-mask="R$ 999,999,999.99">
+                                                    <input type="text" class="form-control" placeholder="R$" name="valor">
                                                     <div class="input-group-addon"><i class="fa fa-dollar"></i></div>
                                                 </div>
                                             </div>
@@ -372,7 +370,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-md-3">Descrição</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" placeholder="">
+                                                <input type="text" class="form-control" placeholder="" name="obs">
                                             </div>
                                         </div>
                                     </div>
@@ -380,9 +378,83 @@
                                 <!--/row-->
                             </div>                        
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer">                            
+                            <button type="button" class="btn btn-default waves-effect text-left" data-dismiss="modal">Fechar</button>
                             <button type="submit" class="btn btn-success">Adicionar</button>
-                            <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Fechar</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- sample modal altera content -->
+        <div class="modal fade bs-example-modal-lg-altera" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myLargeModalLabel">Alterar Procedimento</h4>
+                    </div>
+                    <form action="alterando-procedimento" class="form-horizontal">
+                        <div class="modal-body">                        
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3">Nome do Procedimento</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" placeholder="" name="id" id="procedimentoId" hidden>
+                                                <input type="text" class="form-control" placeholder="" name="nome" id="procedimentoNome">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/row-->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3">Situação</label>
+                                            <div class="col-md-9">
+                                                <select class="form-control" name="stats" id="procedimentoStats">
+                                                    <option value="ativo">ativo</option>
+                                                    <option value="inativo">inativo</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3">Valor</label>
+                                            <div class="col-md-9">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" placeholder="R$" name="valor" id="procedimentoValor">
+                                                    <div class="input-group-addon"><i class="fa fa-dollar"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3">Descrição</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" placeholder="" name="obs" id="procedimentoObs">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/row-->
+                            </div>                        
+                        </div>
+                        <div class="modal-footer">                            
+                            <button type="button" class="btn btn-default waves-effect text-left" data-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-warning">Alterar</button>
                         </div>
                     </form>
                 </div>
@@ -407,8 +479,8 @@
         <!-- Date Picker Plugin JavaScript -->
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.js" />"></script>
         <script type="text/javascript">
-            // Date Picker
-            jQuery('.mydatepicker').datepicker();
+                                                                        // Date Picker
+                                                                        jQuery('.mydatepicker').datepicker();
         </script>
         <!-- Custom Theme JavaScript -->
         <script type="text/javascript" src="<c:url value="/resources/js/custom.min.js" />"></script>

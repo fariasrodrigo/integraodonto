@@ -14,8 +14,6 @@
         <!-- App Favicon -->
         <link rel="shortcut icon" type="text/css" href="<c:url value="/resources/plugins/images/favicon.png" />" />
         <title>IntegraOdonto - Hospital admin dashboard web app kit</title>
-        <!-- Jquery -->
-        <script type="text/javascript" src="<c:url value="https://code.jquery.com/jquery-1.9.1.js" />"></script>
         <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/bootstrap/dist/css/bootstrap.min.css" />" />
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-extension/css/bootstrap-extension.css" />" />
@@ -34,6 +32,13 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+        <script type="text/javascript" src="<c:url value="/resources/js/features/validation.js" />"></script>
+        <!-- Jquery -->
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+                integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+
         <script>
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -47,6 +52,92 @@
             })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
             ga('create', 'UA-19175540-9', 'auto');
             ga('send', 'pageview');
+
+            (function ($) {
+                remove = function (item) {
+                    var tr = $(item).closest('tr');
+                    tr.fadeOut(400, function () {
+                        tr.remove();
+                    });
+                    return false;
+                }
+            })(jQuery);
+
+            function depoisDeExcluir(dadosDoController) {
+                window.history.pushState({}, document.title, "todos-pacientes");
+                alert("Exluído com sucesso!");
+            }
+            function excluir(id) {
+                $.get("deletando-paciente?id=" + id, depoisDeExcluir);
+            }
+
+            // api viacep
+            $(document).ready(function () {
+
+                function limpa_formulário_cep() {
+                    // Limpa valores do formulário de cep.
+                    $("#endereco").val("");
+                    $("#bairro").val("");
+                    $("#cidade").val("");
+                    $("#estado").val("");
+                    $("#ibge").val("");
+                }
+
+                //Quando o campo cep perde o foco.
+                $("#cep").blur(function () {
+
+                    //Nova variável "cep" somente com dígitos.
+                    var cep = $(this).val().replace(/\D/g, '');
+
+                    //Verifica se campo cep possui valor informado.
+                    if (cep != "") {
+
+                        //Expressão regular para validar o CEP.
+                        var validacep = /^[0-9]{8}$/;
+
+                        //Valida o formato do CEP.
+                        if (validacep.test(cep)) {
+
+                            //Preenche os campos com "..." enquanto consulta webservice.
+                            $("#endereco").val("...");
+                            $("#bairro").val("...");
+                            $("#cidade").val("...");
+                            $("#estado").val("...");
+
+                            //Consulta o webservice viacep.com.br/
+                            $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function (dados) {
+
+                                if (!("erro" in dados)) {
+                                    //Atualiza os campos com os valores da consulta.
+                                    $("#endereco").val(dados.logradouro);
+                                    $("#bairro").val(dados.bairro);
+                                    $("#cidade").val(dados.localidade);
+                                    $("#estado").val(dados.uf);
+                                } //end if.
+                                else {
+                                    //CEP pesquisado não foi encontrado.
+                                    limpa_formulário_cep();
+                                    alert("CEP não encontrado.");
+                                }
+                            });
+                        } //end if.
+                        else {
+                            //cep é inválido.
+                            limpa_formulário_cep();
+                            alert("Formato de CEP inválido.");
+                        }
+                    } //end if.
+                    else {
+                        //cep sem valor, limpa formulário.
+                        limpa_formulário_cep();
+                    }
+                });
+            });
+
+            //tooltip
+            $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
         </script>
     </head>
 
@@ -179,7 +270,7 @@
                 <div class="container-fluid">
                     <div class="row bg-title">
                         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                            <h4 class="page-title">NOME...</h4>
+                            <h4 class="page-title">${paciente.nome}</h4>
                         </div>
                         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                             <ol class="breadcrumb">
@@ -194,7 +285,7 @@
                         <div class="col-lg-12 col-sm-12 col-xs-12">
                             <div class="white-box">
                                 <h3 class="box-title"></h3>
-                                <p class="text-muted m-b-30">Edite as informações do paciente ... aqui</p>
+                                <p class="text-muted m-b-30">Edite as informações do paciente ${paciente.nome} aqui</p>
                                 <!-- Nav tabs -->
                                 <ul class="nav customtab nav-tabs" role="tablist">
                                     <li role="presentation" class="nav-item"><a href="editar-paciente" class="nav-link active"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs">Editar</span></a></li>
@@ -211,7 +302,7 @@
                                     <div role="tabpanel" class="tab-pane fade active in">
                                         <div class="col-md-12">
                                             <div class="white-box">
-                                                <form action="#" class="form-horizontal">
+                                                <form action="alterando-paciente" class="form-horizontal" method="post">
                                                     <div class="form-body">
                                                         <h3 class="box-title">Informações Pessoais</h3>
                                                         <hr class="m-t-0 m-b-40">
@@ -220,7 +311,16 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Nome</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control" placeholder="">
+                                                                        <input type="text" class="form-control" name="id" value="${paciente.id}" hidden>
+                                                                        <input type="text" class="form-control" placeholder="" name="nome" value="${paciente.nome}">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3">Prontuário</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" class="form-control" placeholder="" name="prontuario" value="${paciente.prontuario}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -231,23 +331,21 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Sexo</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control">
-                                                                            <option value="">Masculino</option>
-                                                                            <option value="">Feminino</option>
+                                                                        <select class="form-control" name="sexo" value="${paciente.sexo}">
+                                                                            <option value="Masculino">Masculino</option>
+                                                                            <option value="Feminino">Feminino</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <!--/span-->
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Data de Nascimento</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="99/99/9999" class="form-control">
+                                                                        <input type="text" placeholder="dd/mm/aaaa" data-mask="99/99/9999" class="form-control" name='nascimento' value="${paciente.nascimento}">
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <!--/span-->
                                                         </div>
                                                         <!--/row-->
                                                         <div class="row">
@@ -255,7 +353,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">CPF</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="999.999.999-99" class="form-control">
+                                                                        <input type="text" placeholder="" data-mask="999.999.999-99" class="form-control" name="cpf" value="${paciente.cpf}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -264,11 +362,21 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">RG</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="999-99-9999" class="form-control">
+                                                                        <input type="text" placeholder="" data-mask="99.999.999-99" class="form-control" name="rg" value="${paciente.rg}">
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <!--/span-->
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="control-label col-md-3">Observações</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" placeholder="Informações importantes" class="form-control" name="descricao" value="${paciente.descricao}"> 
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <!--/row-->
                                                         <h3 class="box-title">Informações de Contato</h3>
@@ -278,7 +386,8 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Contato Celular</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="Insira o celular, também utilizado para envio de SMS" data-mask="(99) 99999-9999" class="form-control"></div>
+                                                                        <input type="text" placeholder="Insira o celular, também utilizado para envio de SMS" data-mask="(99) 99999-9999" class="form-control" name="celular" value="${paciente.celular}"> 
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <!--/span-->
@@ -286,7 +395,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Contato Fixo</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="Insira o contato residencial ou comercial" data-mask="(99) 9999-9999" class="form-control">
+                                                                        <input type="text" placeholder="Insira o contato residencial ou comercial" data-mask="(99) 9999-9999" class="form-control" name="fixo" value="${paciente.fixo}"> 
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -298,12 +407,11 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Email</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="email" placeholder=""  class="form-control">
+                                                                        <input type="email" placeholder=""  class="form-control" name="email" value="${paciente.email}">
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <!--/row-->
                                                         <h3 class="box-title">Informações de Endereço</h3>
                                                         <hr class="m-t-0 m-b-40">
                                                         <div class="row">
@@ -311,7 +419,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">CEP</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="99.999-999" class="form-control">
+                                                                        <input type="text" placeholder="" data-mask="99.999-999" class="form-control" name="cep" id="cep" value="${paciente.cep}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -321,7 +429,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Endereço</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='endereco' id="endereco" min="8" max="8" readonly value="${paciente.endereco}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -330,7 +438,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Número</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='numero' value="${paciente.numero}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -338,7 +446,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Compl.</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='compl' value="${paciente.compl}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -350,7 +458,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Bairro</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='bairro' id="bairro" readonly value="${paciente.bairro}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -359,7 +467,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Cidade</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control">
+                                                                        <input type="text" class="form-control" name='cidade' id="cidade" readonly value="${paciente.cidade}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -367,9 +475,34 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Estado</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control">
-                                                                            <option value="">Acre</option>
-                                                                            <option value="">Bahia</option>
+                                                                        <select class="form-control" name='estado' id="estado" readonly value="${paciente.estado}">
+                                                                            <option value="AC">AC</option>
+                                                                            <option value="AL">AL</option>
+                                                                            <option value="AP">AP</option>
+                                                                            <option value="AM">AM</option>
+                                                                            <option value="BA">BA</option>
+                                                                            <option value="CE">CE</option>
+                                                                            <option value="DF">DF</option>
+                                                                            <option value="ES">ES</option>
+                                                                            <option value="GO">GO</option>
+                                                                            <option value="MA">MA</option>
+                                                                            <option value="MT">MT</option>
+                                                                            <option value="MS">MS</option>
+                                                                            <option value="MG">MG</option>
+                                                                            <option value="PA">PA</option>
+                                                                            <option value="PB">PB</option>
+                                                                            <option value="PR">PR</option>
+                                                                            <option value="PE">PE</option>
+                                                                            <option value="PI">PI</option>
+                                                                            <option value="RJ">RJ</option>
+                                                                            <option value="RN">RN</option>
+                                                                            <option value="RS">RS</option>
+                                                                            <option value="RO">RO</option>
+                                                                            <option value="RR">RR</option>
+                                                                            <option value="SC">SC</option>
+                                                                            <option value="SE">SE</option>
+                                                                            <option value="SP">SP</option>
+                                                                            <option value="TO">TO</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -384,9 +517,9 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Plano de Saúde</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control">
-                                                                            <option value="">Amil</option>
-                                                                            <option value="">Hapvida</option>
+                                                                        <select class="form-control" name='planoDeSaude' value="${paciente.planoDeSaude}">
+                                                                            <option value="Amil">Amil</option>
+                                                                            <option value="Hapvida">Hapvida</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -396,7 +529,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Número do Cartão</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" class="form-control">
+                                                                        <input type="text" placeholder="" class="form-control" name='numeroDoCartao' value="${paciente.numeroDoCartao}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -408,7 +541,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Nome do Plano</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" class="form-control">
+                                                                        <input type="text" placeholder="" class="form-control" name='nomeDoPlano' value="${paciente.nomeDoPlano}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -417,9 +550,9 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Tipo de Usuário</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control">
-                                                                            <option value="">Titular</option>
-                                                                            <option value="">Dependente</option>
+                                                                        <select class="form-control" name='tipoDeUsuario' value="${paciente.tipoDeUsuario}">
+                                                                            <option value="Titular">Titular</option>
+                                                                            <option value="Dependente">Dependente</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -432,12 +565,11 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3"> Titular Plano de Saúde</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" class="form-control">
+                                                                        <input type="text" placeholder="" class="form-control" name='titularDoPlano' value="${paciente.titularDoPlano}">
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <!--/row-->
                                                     </div>
                                                     <hr>
                                                     <div class="form-actions">

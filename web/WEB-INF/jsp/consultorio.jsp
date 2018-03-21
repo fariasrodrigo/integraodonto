@@ -34,6 +34,12 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+        
+        <!-- Jquery -->
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+                integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+
         <script>
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -47,6 +53,69 @@
             })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
             ga('create', 'UA-19175540-9', 'auto');
             ga('send', 'pageview');
+
+            // api viacep
+            $(document).ready(function () {
+
+                function limpa_formulário_cep() {
+                    // Limpa valores do formulário de cep.
+                    $("#endereco").val("");
+                    $("#bairro").val("");
+                    $("#cidade").val("");
+                    $("#estado").val("");
+                    $("#ibge").val("");
+                }
+
+                //Quando o campo cep perde o foco.
+                $("#cep").blur(function () {
+
+                    //Nova variável "cep" somente com dígitos.
+                    var cep = $(this).val().replace(/\D/g, '');
+
+                    //Verifica se campo cep possui valor informado.
+                    if (cep != "") {
+
+                        //Expressão regular para validar o CEP.
+                        var validacep = /^[0-9]{8}$/;
+
+                        //Valida o formato do CEP.
+                        if (validacep.test(cep)) {
+
+                            //Preenche os campos com "..." enquanto consulta webservice.
+                            $("#endereco").val("...");
+                            $("#bairro").val("...");
+                            $("#cidade").val("...");
+                            $("#estado").val("...");
+
+                            //Consulta o webservice viacep.com.br/
+                            $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function (dados) {
+
+                                if (!("erro" in dados)) {
+                                    //Atualiza os campos com os valores da consulta.
+                                    $("#endereco").val(dados.logradouro);
+                                    $("#bairro").val(dados.bairro);
+                                    $("#cidade").val(dados.localidade);
+                                    $("#estado").val(dados.uf);
+                                } //end if.
+                                else {
+                                    //CEP pesquisado não foi encontrado.
+                                    limpa_formulário_cep();
+                                    alert("CEP não encontrado.");
+                                }
+                            });
+                        } //end if.
+                        else {
+                            //cep é inválido.
+                            limpa_formulário_cep();
+                            alert("Formato de CEP inválido.");
+                        }
+                    } //end if.
+                    else {
+                        //cep sem valor, limpa formulário.
+                        limpa_formulário_cep();
+                    }
+                });
+            });
         </script>
     </head>
 
@@ -279,7 +348,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">CEP</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" placeholder="" data-mask="99.999-999" class="form-control" value="${endereco.cep}" name="cep">
+                                                                        <input type="text" placeholder="" data-mask="99.999-999" class="form-control" value="${endereco.cep}" name="cep" id="cep">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -289,7 +358,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Endereço</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control" value="${endereco.endereco}" name="endereco">
+                                                                        <input type="text" class="form-control" value="${endereco.endereco}" name="endereco" id="endereco" readonly>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -318,7 +387,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Bairro</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control" value="${endereco.bairro}" name="bairro">
+                                                                        <input type="text" class="form-control" value="${endereco.bairro}" name="bairro" id="bairro" readonly>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -327,7 +396,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Cidade</label>
                                                                     <div class="col-md-9">
-                                                                        <input type="text" class="form-control" value="${endereco.cidade}" name="cidade">
+                                                                        <input type="text" class="form-control" value="${endereco.cidade}" name="cidade" id="cidade" readonly>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -335,34 +404,34 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label col-md-3">Estado</label>
                                                                     <div class="col-md-9">
-                                                                        <select class="form-control" name="estado">
-                                                                            <option value="Acre" ${endereco.estado == 'Acre'? 'selected' : ''}>Acre</option>
-                                                                            <option value="Alagoas" ${endereco.estado == 'Alagoas'? 'selected' : ''}>Alagoas</option>
-                                                                            <option value="Amapá" ${endereco.estado == 'Amapá'? 'selected' : ''}>Amapá</option>
-                                                                            <option value="Amazonas" ${endereco.estado == 'Amazonas'? 'selected' : ''}>Amazonas</option>
-                                                                            <option value="Bahia" ${endereco.estado == 'Bahia'? 'selected' : ''}>Bahia</option>
-                                                                            <option value="Ceará" ${endereco.estado == 'Ceará'? 'selected' : ''}>Ceará</option>
-                                                                            <option value="Distrito Federal" ${endereco.estado == 'Distrito Federal'? 'selected' : ''}>Distrito Federal</option>
-                                                                            <option value="Espírito Santo" ${endereco.estado == 'Espírito Santo'? 'selected' : ''}>Espírito Santo</option>
-                                                                            <option value="Goiás" ${endereco.estado == 'Goiás'? 'selected' : ''}>Goiás</option>
-                                                                            <option value="Maranhão" ${endereco.estado == 'Maranhão'? 'selected' : ''}>Maranhão</option>
-                                                                            <option value="Mato Grosso" ${endereco.estado == 'Mato Grosso'? 'selected' : ''}>Mato Grosso</option>
-                                                                            <option value="Mato Grosso do Sul" ${endereco.estado == 'Mato Grosso do Sul'? 'selected' : ''}>Mato Grosso do Sul</option>
-                                                                            <option value="Minas Gerais" ${endereco.estado == 'Minas Gerais'? 'selected' : ''}>Minas Gerais</option>
-                                                                            <option value="Pará" ${endereco.estado == 'Pará'? 'selected' : ''}>Pará</option>
-                                                                            <option value="Paraiba" ${endereco.estado == 'Paraiba'? 'selected' : ''}>Paraiba</option>            
-                                                                            <option value="Paraná" ${endereco.estado == 'Paraná'? 'selected' : ''}>Paraná</option>   
-                                                                            <option value="Pernambuco" ${endereco.estado == 'Pernambuco'? 'selected' : ''}>Pernambuco</option>   
-                                                                            <option value="Piauí" ${endereco.estado == 'Piauí'? 'selected' : ''}>Piauí</option>   
-                                                                            <option value="Rio de Janeiro" ${endereco.estado == 'Rio de Janeiro'? 'selected' : ''}>Rio de Janeiro</option>   
-                                                                            <option value="Rio Grande do Norte" ${endereco.estado == 'Rio Grande do Norte'? 'selected' : ''}>Rio Grande do Norte</option>   
-                                                                            <option value="Rio Grande do Sul" ${endereco.estado == 'Rio Grande do Sul'? 'selected' : ''}>Rio Grande do Sul</option>   
-                                                                            <option value="Rondônia" ${endereco.estado == 'Rondônia'? 'selected' : ''}>Rondônia</option>   
-                                                                            <option value="Roraima" ${endereco.estado == 'Roraima'? 'selected' : ''}>Roraima</option>  
-                                                                            <option value="Santa Catarina" ${endereco.estado == 'Santa Catarina'? 'selected' : ''}>Santa Catarina</option>  
-                                                                            <option value="Sergipe" ${endereco.estado == 'Sergipe'? 'selected' : ''}>Sergipe</option>  
-                                                                            <option value="São Paulo" ${endereco.estado == 'São Paulo'? 'selected' : ''}>São Paulo</option>  
-                                                                            <option value="Tocantins" ${endereco.estado == 'Tocantins'? 'selected' : ''}>Tocantins</option>
+                                                                        <select class="form-control" name="estado" id="estado" readonly>
+                                                                            <option value="AC" ${endereco.estado == 'AC'? 'selected' : ''}>AC</option>
+                                                                            <option value="AL" ${endereco.estado == 'AL'? 'selected' : ''}>AL</option>
+                                                                            <option value="AP" ${endereco.estado == 'AP'? 'selected' : ''}>AP</option>
+                                                                            <option value="AM" ${endereco.estado == 'AM'? 'selected' : ''}>AM</option>
+                                                                            <option value="BA" ${endereco.estado == 'BA'? 'selected' : ''}>BA</option>
+                                                                            <option value="CE" ${endereco.estado == 'CE'? 'selected' : ''}>CE</option>
+                                                                            <option value="DF" ${endereco.estado == 'DF'? 'selected' : ''}>DF</option>
+                                                                            <option value="ES" ${endereco.estado == 'ES'? 'selected' : ''}>ES</option>
+                                                                            <option value="GO" ${endereco.estado == 'GO'? 'selected' : ''}>GO</option>
+                                                                            <option value="MA" ${endereco.estado == 'MA'? 'selected' : ''}>MA</option>
+                                                                            <option value="MT" ${endereco.estado == 'MT'? 'selected' : ''}>MT</option>
+                                                                            <option value="MS" ${endereco.estado == 'MS'? 'selected' : ''}>MS</option>
+                                                                            <option value="MG" ${endereco.estado == 'MG'? 'selected' : ''}>MG</option>
+                                                                            <option value="PA" ${endereco.estado == 'PA'? 'selected' : ''}>PA</option>
+                                                                            <option value="PB" ${endereco.estado == 'PB'? 'selected' : ''}>PB</option>            
+                                                                            <option value="PR" ${endereco.estado == 'PR'? 'selected' : ''}>PR</option>   
+                                                                            <option value="PE" ${endereco.estado == 'PE'? 'selected' : ''}>PE</option>   
+                                                                            <option value="PI" ${endereco.estado == 'PI'? 'selected' : ''}>PI</option>   
+                                                                            <option value="RJ" ${endereco.estado == 'RJ'? 'selected' : ''}>RJ</option>   
+                                                                            <option value="RN" ${endereco.estado == 'RN'? 'selected' : ''}>RN</option>   
+                                                                            <option value="RS" ${endereco.estado == 'RS'? 'selected' : ''}>RS</option>   
+                                                                            <option value="RO" ${endereco.estado == 'RO'? 'selected' : ''}>RO</option>   
+                                                                            <option value="RR" ${endereco.estado == 'RR'? 'selected' : ''}>RR</option>  
+                                                                            <option value="SC" ${endereco.estado == 'SC'? 'selected' : ''}>SC</option>  
+                                                                            <option value="SE" ${endereco.estado == 'SE'? 'selected' : ''}>SE</option>  
+                                                                            <option value="SP" ${endereco.estado == 'SP'? 'selected' : ''}>SP</option>  
+                                                                            <option value="TO" ${endereco.estado == 'TO'? 'selected' : ''}>TO</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>

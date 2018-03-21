@@ -17,10 +17,10 @@ public class ContatoDAO {
         this.connection = connection;
     }
 
-    public List<ContatoDTO> listar(int sessionID) {
+    public List<ContatoDTO> listar() {
 
         List<ContatoDTO> results = new ArrayList<>();
-        String sql = "SELECT id, celular, fixo, email FROM contato WHERE id = " + sessionID + ";";
+        String sql = "SELECT id, celular, fixo, email FROM contato;";
         try (PreparedStatement stmt = connection.prepareStatement(sql);
                 ResultSet resultSet = stmt.executeQuery()) {
 
@@ -28,6 +28,7 @@ public class ContatoDAO {
                 results.add(popular(resultSet));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
 
@@ -44,32 +45,6 @@ public class ContatoDAO {
         contatoDTO.setEmail(rs.getString("email"));
 
         return contatoDTO;
-    }
-
-    public ContatoDTO buscaPorId(long id) throws SQLException {
-
-        if (id == 0) {
-            throw new IllegalArgumentException("sessionID não deve ser nulo");
-        }
-
-        ContatoDTO contatoDTO = new ContatoDTO();
-        String sql = "SELECT id, celular, fixo, email FROM contato WHERE id = " + id + ";";
-        try (PreparedStatement stmt = connection.prepareStatement(sql);) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    contatoDTO.setId(rs.getInt("id"));
-                    contatoDTO.setCelular(rs.getString("celular"));
-                    contatoDTO.setFixo(rs.getString("fixo"));
-                    contatoDTO.setEmail(rs.getString("email"));
-                    return contatoDTO;
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-
-        }
-        return null;
     }
 
     public int adicionaRetornandoID(ContatoDTO contato) throws SQLException {
@@ -93,7 +68,7 @@ public class ContatoDAO {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
 
@@ -101,15 +76,42 @@ public class ContatoDAO {
         return id;
     }
 
-    public void alterar(ContatoDTO contato, long id) throws SQLException {
+    public void adiciona(ContatoDTO contato) throws SQLException {
 
-        String sql = "UPDATE contato SET celular = ?, fixo = ?, email = ? WHERE id = " + id + " ;";
+        if (contato == null) {
+            throw new IllegalArgumentException("adiciona contato esta vazio");
+        }
+
+        String sql = "INSERT INTO contato (celular, fixo, email) VALUES (?,?,?);";
         try (PreparedStatement stmt = connection.prepareStatement(sql);) {
             stmt.setString(1, contato.getCelular());
             stmt.setString(2, contato.getFixo());
             stmt.setString(3, contato.getEmail());
             stmt.execute();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+
+        }
+    }
+
+    public void alterar(ContatoDTO contato) throws SQLException {
+
+        if (contato == null) {
+            throw new IllegalArgumentException("altera contato esta vazio");
+        }
+
+        String sql = "UPDATE contato SET celular = ?, fixo = ?, email = ? WHERE id = " + contato.getId() + " ;";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);) {
+            stmt.setString(1, contato.getCelular());
+            stmt.setString(2, contato.getFixo());
+            stmt.setString(3, contato.getEmail());
+            stmt.execute();
+
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
 

@@ -71,6 +71,7 @@
                             <h2 class="fs-title">Configurações do Consultório</h2>
                             <h3 class="fs-subtitle">Qual o nome do Consultório?</h3>
                             <input type="text" name="nomeConsultorio" required="" placeholder="Nome do Consultório" />
+                            <input type="text" name="cnpjConsultorio" data-mask="99.999.999/9999-99" required="" placeholder="CNPJ do Consultório" />
                             <input type="button" name="next" class="next action-button" value="Próximo" />
                         </fieldset>
                         <fieldset>
@@ -110,6 +111,7 @@
         <script type="text/javascript" src="<c:url value="/resources/js/waves.js" />"></script>
         <!-- Custom Theme JavaScript -->
         <script type="text/javascript" src="<c:url value="/resources/js/custom.min.js" />"></script>
+        <script type="text/javascript" src="<c:url value="/resources/js/mask.js" />"></script>
         <!--Style Switcher -->
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/styleswitcher/jQuery.style.switcher.js" />"></script>
     </body>

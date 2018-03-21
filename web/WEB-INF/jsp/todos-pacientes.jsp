@@ -14,8 +14,6 @@
         <!-- App Favicon -->
         <link rel="shortcut icon" type="text/css" href="<c:url value="/resources/plugins/images/favicon.png" />" />
         <title>IntegraOdonto - Hospital admin dashboard web app kit</title>
-        <!-- Jquery -->
-        <script type="text/javascript" src="<c:url value="https://code.jquery.com/jquery-1.9.1.js" />"></script>
         <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/bootstrap/dist/css/bootstrap.min.css" />" />
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/plugins/bower_components/bootstrap-extension/css/bootstrap-extension.css" />" />
@@ -34,6 +32,12 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+        <script type="text/javascript" src="<c:url value="/resources/js/features/validation.js" />"></script>
+        <!-- Jquery -->
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+                integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+
         <script>
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -65,6 +69,69 @@
             function excluir(id) {
                 $.get("deletando-paciente?id=" + id, depoisDeExcluir);
             }
+
+            // api viacep
+            $(document).ready(function () {
+
+                function limpa_formulário_cep() {
+                    // Limpa valores do formulário de cep.
+                    $("#endereco").val("");
+                    $("#bairro").val("");
+                    $("#cidade").val("");
+                    $("#estado").val("");
+                    $("#ibge").val("");
+                }
+
+                //Quando o campo cep perde o foco.
+                $("#cep").blur(function () {
+
+                    //Nova variável "cep" somente com dígitos.
+                    var cep = $(this).val().replace(/\D/g, '');
+
+                    //Verifica se campo cep possui valor informado.
+                    if (cep != "") {
+
+                        //Expressão regular para validar o CEP.
+                        var validacep = /^[0-9]{8}$/;
+
+                        //Valida o formato do CEP.
+                        if (validacep.test(cep)) {
+
+                            //Preenche os campos com "..." enquanto consulta webservice.
+                            $("#endereco").val("...");
+                            $("#bairro").val("...");
+                            $("#cidade").val("...");
+                            $("#estado").val("...");
+
+                            //Consulta o webservice viacep.com.br/
+                            $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function (dados) {
+
+                                if (!("erro" in dados)) {
+                                    //Atualiza os campos com os valores da consulta.
+                                    $("#endereco").val(dados.logradouro);
+                                    $("#bairro").val(dados.bairro);
+                                    $("#cidade").val(dados.localidade);
+                                    $("#estado").val(dados.uf);
+                                } //end if.
+                                else {
+                                    //CEP pesquisado não foi encontrado.
+                                    limpa_formulário_cep();
+                                    alert("CEP não encontrado.");
+                                }
+                            });
+                        } //end if.
+                        else {
+                            //cep é inválido.
+                            limpa_formulário_cep();
+                            alert("Formato de CEP inválido.");
+                        }
+                    } //end if.
+                    else {
+                        //cep sem valor, limpa formulário.
+                        limpa_formulário_cep();
+                    }
+                });
+            });
         </script>
     </head>
 
@@ -229,32 +296,24 @@
                                                             <tr>
                                                                 <th>Prontuário</th>
                                                                 <th>Nome</th>
-                                                                <th>CPF</th>
-                                                                <th>RG</th>
-                                                                <th>Contato Celular</th>
-                                                                <th>Contato Fixo</th>
-                                                                <th>Plano de Saúde</th>
                                                                 <th>Última Consulta</th>
                                                                 <th>Próxima Consulta</th>
-                                                                <th colspan="4">Interações</th>
+                                                                <th colspan="6">Interações</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             <c:forEach items="${pacienteList}" var="list">
                                                                 <tr>
                                                                     <td>${list.prontuario}</td>
-                                                                    <td><a href="#">${list.nome}</a></td>
-                                                                    <td>${list.cpf}</td>
-                                                                    <td>${list.rg}</td>
-                                                                    <td>${list.celular}</td>
-                                                                    <td>${list.fixo}</td>
-                                                                    <td>${list.planoDeSaude}</td>
-                                                                    <td><span class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</span> </td>
-                                                                    <td><span class="text-muted"><i class="fa fa-clock-o"></i> May 11, 2018</span> </td>
-                                                                    <td><span class="text-muted"><i class="fa fa-send"></i> Enviar Email</span></td>
-                                                                    <td><span class="text-muted"><i class="fa fa-envelope"></i> Enviar SMS</span></td>
-                                                                    <td><span class="text-muted"><i class="fa fa-edit"></i> Editar</span></td>
-                                                                    <td><a href='#' onclick="remove(this);excluir(${list.id})" class="text-muted"><i class="fa fa-trash-o"></i> Excluir</a></td>
+                                                                    <td>${list.nome}</td>
+                                                                    <td><a class="text-muted"><i class="fa fa-clock-o"></i> Oct 16, 2017</a> </td>
+                                                                    <td><a><i class="fa fa-clock-o"></i> May 11, 2018</a> </td>
+                                                                    <td><a href='#'><i class="fa fa-send"></i> Enviar Email</a></td>
+                                                                    <td><a href='#'><i class="fa fa-envelope"></i> Enviar SMS</a></td>                                                                    
+                                                                    <td><a href='#' onclick="setaPerfilTodosPacientes('${list.nome}', '${list.prontuario}', '${list.nascimento}', '${list.cpf}', '${list.rg}', '${list.celular}', '${list.fixo}', '${list.email}', '${list.cep}', '${list.endereco}', '${list.numero}', '${list.compl}', '${list.bairro}', '${list.cidade}', '${list.estado}')" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="fa  fa-info-circle"></i> Informações</a></td>
+                                                                    <td><a href='#'><i class="fa fa-user "></i> Visualizar Perfil</a></td>
+                                                                    <td><a href="editar-paciente?id=${list.id}"><i class="fa fa-edit"></i> Editar</a></td>
+                                                                    <td><a href='#' onclick="remove(this);excluir(${list.id})"><i class="fa fa-trash-o"></i> Excluir</a></td>
                                                                 </tr>
                                                             </c:forEach>
                                                         </tbody>
@@ -323,6 +382,69 @@
             <!-- /#page-wrapper -->
         </div>
         <!-- /#wrapper -->
+
+        <!-- sample modal content -->
+        <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myLargeModalLabel">Large modal</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="white-box">
+                                <div class="row">
+                                    <div class="col-md-3 col-xs-6 b-r"> <strong>Prontuário</strong>
+                                        <br>
+                                        <p class="text-muted" id="pacienteprontuario"></p>
+                                    </div>
+                                    <div class="col-md-3 col-xs-6 b-r"> <strong>CPF</strong>
+                                        <br>
+                                        <p class="text-muted" id="pacientecpf"></p>
+                                    </div>
+                                    <div class="col-md-3 col-xs-6 b-r"> <strong>RG</strong>
+                                        <br>
+                                        <p class="text-muted" id="pacienterg"></p>
+                                    </div>
+                                    <div class="col-md-3 col-xs-6"> <strong>Nascimento</strong>
+                                        <br>
+                                        <p class="text-muted" id="pacientenascimento"></p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4 col-xs-6 b-r"> <strong>Celular</strong>
+                                        <br>
+                                        <p class="text-muted" id="pacientecelular"></p>
+                                    </div>
+                                    <div class="col-md-4 col-xs-6 b-r"> <strong>Fixo</strong>
+                                        <br>
+                                        <p class="text-muted" id="pacientefixo"></p>
+                                    </div>
+                                    <div class="col-md-4 col-xs-6"> <strong>Email</strong>
+                                        <br>
+                                        <p class="text-muted" id="pacienteemail"></p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <br>
+                                <h4 class="m-t-30">Endereço</h4>
+                                <p class="m-t-30" id="pacienteendereco"></p>
+                                <p class="m-t-30" id="pacientecep"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default waves-effect text-left" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
         <!-- jQuery -->
         <script type="text/javascript" src="<c:url value="/resources/plugins/bower_components/jquery/dist/jquery.min.js" />"></script>
         <!-- Bootstrap Core JavaScript -->

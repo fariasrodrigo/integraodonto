@@ -1,9 +1,12 @@
 package br.com.integraodonto.controller;
 
+import br.com.integraodonto.bo.ConsultorioBO;
+import br.com.integraodonto.bo.ContatoBO;
+import br.com.integraodonto.bo.EnderecoBO;
+import br.com.integraodonto.bo.ProfissionalBO;
 import br.com.integraodonto.dao.ConsultorioDAO;
 import br.com.integraodonto.dao.ContatoDAO;
 import br.com.integraodonto.dao.EnderecoDAO;
-import br.com.integraodonto.dao.ProfissionalDAO;
 import br.com.integraodonto.dto.ConsultorioDTO;
 import br.com.integraodonto.dto.ContatoDTO;
 import br.com.integraodonto.dto.EnderecoDTO;
@@ -27,19 +30,23 @@ import org.springframework.web.servlet.ModelAndView;
 public class ConsultorioController {
 
     Menu menu;
+    ConsultorioBO consultorioBO;
+    ProfissionalBO profissionalBO;
+    ContatoBO contatoBO;
+    EnderecoBO enderecoBO;
 
     public ConsultorioController() {
         this.menu = new Menu();
+        this.consultorioBO = new ConsultorioBO();
+        this.profissionalBO = new ProfissionalBO();
+        this.contatoBO = new ContatoBO();
+        this.enderecoBO = new EnderecoBO();
     }
 
     @RequestMapping("/consultorio")
     public ModelAndView consultorio(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
 
         Connection connection = new MysqlConnectionPool().getConnection();
-        ConsultorioDAO consultorioDAO = new ConsultorioDAO(connection);
-        ContatoDAO contatoDAO = new ContatoDAO(connection);
-        EnderecoDAO enderecoDAO = new EnderecoDAO(connection);
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(connection);
 
         try {
             ProfissionalDTO profissionalDTO = (ProfissionalDTO) request.getSession().getAttribute("logando"); // Recupera parametros da session
@@ -47,10 +54,10 @@ public class ConsultorioController {
             if ("admin".equals(profissionalDTO.getNivel()) && "ativo".equals(profissionalDTO.getStats()) && "nao".equals(profissionalDTO.getDeletado())) { // Verifica se usuário tem permissões
 
                 String hidden = menu.menu(profissionalDTO.getNivel());
-                ConsultorioDTO consultorioDTO = consultorioDAO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
-                ContatoDTO contatoDTO = contatoDAO.buscaPorId(consultorioDTO.getContatoID()); // Buscar contato por ID
-                EnderecoDTO enderecoDTO = enderecoDAO.buscaPorId(consultorioDTO.getEnderecoID()); // Buscar endereço por ID
-                ProfissionalDTO profissional = profissionalDAO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
+                ConsultorioDTO consultorioDTO = consultorioBO.buscaPorId(profissionalDTO.getConsultorioID()); // Buscar consultório por ID
+                ContatoDTO contatoDTO = contatoBO.buscaPorId(consultorioDTO.getContatoID()); // Buscar contato por ID
+                EnderecoDTO enderecoDTO = enderecoBO.buscaPorId(consultorioDTO.getEnderecoID()); // Buscar endereço por ID
+                ProfissionalDTO profissional = profissionalBO.buscaPorId(profissionalDTO.getId()); // Buscar contato por ID
                 ModelAndView mv = new ModelAndView("consultorio");
 
                 mv.addObject("consultorio", consultorioDTO);
@@ -87,6 +94,7 @@ public class ConsultorioController {
         ConsultorioDTO consultorio = new ConsultorioDTO();
         ProfissionalDTO profissional = new ProfissionalDTO();
         consultorio.setNome(request.getParameter("nomeConsultorio"));
+        consultorio.setCnpj(request.getParameter("cnpjConsultorio"));
         profissional.setNome(request.getParameter("nomeProfissional"));
         profissional.setLogin(request.getParameter("login"));
         profissional.setSenha(request.getParameter("senha1"));
@@ -141,8 +149,10 @@ public class ConsultorioController {
 
                 ConsultorioDTO recuperandoConsultorioSession = consultorioDAO.recuperaConsultorio(profissionalDTO.getConsultorioID());
                 consultorioDAO.alterar(consultorioDTO, profissionalDTO.getConsultorioID());
-                contatoDAO.alterar(contatoDTO, recuperandoConsultorioSession.getContatoID());
-                enderecoDAO.alterar(enderecoDTO, recuperandoConsultorioSession.getEnderecoID());
+                contatoDTO.setId(recuperandoConsultorioSession.getContatoID());
+                contatoDAO.alterar(contatoDTO);
+                enderecoDTO.setId(recuperandoConsultorioSession.getEnderecoID());
+                enderecoDAO.alterar(enderecoDTO);
                 return "redirect:consultorio";
 
             } else {

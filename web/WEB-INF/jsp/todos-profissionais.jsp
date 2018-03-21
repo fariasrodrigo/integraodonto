@@ -232,7 +232,6 @@
                                                                 <th>Nome</th>
                                                                 <th>Especialização</th>
                                                                 <th>Contato</th>
-                                                                <th>Email</th>
                                                                 <th>Login</th>
                                                                 <th>Senha</th>
                                                                 <th>Status</th>
@@ -245,12 +244,11 @@
                                                                     <td>${list.nome}</td>
                                                                     <td>${list.especializacao}</td>
                                                                     <td>${list.celular}</td>
-                                                                    <td>${list.email}</td>
                                                                     <td>${list.login}</td>
                                                                     <td>${list.senha}</td>
                                                                     <td>${list.stats}</td>
                                                                     <td><span class="text-muted"><i class="fa fa-calendar"></i> Configurar Agenda</span> </td>
-                                                                    <td><a href='#' class="text-muted" data-toggle="modal" data-target=".bs-example-modal-lg" class="model_img img-responsive" onclick="setaAlteraProfissional(${list.id}, '${list.nome}', '${list.sexo}', '${list.especializacao}', '${list.cpf}', '${list.rg}', '${list.stats}', '${list.agenda}', '${list.login}', '${list.senha}', '${list.nivel}')"><i class="fa fa-edit"></i> Editar</a></td>
+                                                                    <td><a href='#' class="text-muted" data-toggle="modal" data-target=".bs-example-modal-lg" class="model_img img-responsive" onclick="setaAlteraProfissional(${list.id}, ${list.contatoID}, '${list.nome}', '${list.sexo}', '${list.especializacao}', '${list.cpf}', '${list.rg}', '${list.stats}', '${list.agenda}', '${list.celular}', '${list.fixo}', '${list.email}', '${list.login}', '${list.senha}', '${list.nivel}')"><i class="fa fa-edit"></i> Editar</a></td>
                                                                     <td><a href='#' onclick="remove(this);excluir(${list.id})" class="text-muted"><i class="fa fa-trash-o"></i> Excluir</a></td>
                                                                 </tr>
                                                             </c:forEach>
@@ -340,6 +338,7 @@
                                             <div class="form-group">                                                
                                                 <div class="col-md-12">
                                                     <input type="text" class="form-control" placeholder="" name="id" id="profissionalId" hidden>
+                                                    <input type="text" class="form-control" placeholder="" name="contatoID" id="profissionalContatoID" hidden>
                                                     <input type="text" class="form-control" placeholder="Nome" name="nome" id="profissionalNome">
                                                 </div>
                                             </div>
@@ -401,7 +400,35 @@
                                         <!--/span-->
                                     </div>
                                     <!--/row-->
-
+                                    <h3 class="box-title">Informações de Contato</h3>
+                                    <hr class="m-t-0 m-b-40">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <input type="text" placeholder="Celular" data-mask="(99) 99999-9999" class="form-control" name="celular" id="profissionalCelular"> </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <input type="text" placeholder="Fixo" data-mask="(99) 9999-9999" class="form-control" name="fixo" id="profissionalFixo"> </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                    </div>
+                                    <!--/row-->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <input type="email" placeholder="Email"  class="form-control" name="email" id="profissionalEmail">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/row-->
                                     <h3 class="box-title">Dados de Acesso e Segurança</h3>
                                     <hr class="m-t-0 m-b-40">
                                     <!--/row-->
@@ -455,9 +482,9 @@
                                         <!--/span-->
                                     </div>
                                 </div>
-                                <div class="form-actions">
-                                    <button type="submit" class="btn btn-warning waves-effect text-left">Alterar</button>
-                                    <button type="reset" class="btn btn-default" data-dismiss="modal">Limpar</button>
+                                <div class="modal-footer">                                    
+                                    <button type="button" class="btn btn-default waves-effect text-left" data-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-warning">Alterar</button>
                                 </div>
                             </form>
                         </div>
